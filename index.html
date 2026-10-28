@@ -21,7 +21,7 @@
   .task.done { color: #444; text-decoration: line-through; }
 
   #sanityBar {
-    position: absolute; top: 16px; right: 16px;
+    position: absolute; top: 16px; right: 60px; /* Geser buat tombol gear */
     width: 140px; background: rgba(0,0,0,0.7); padding: 6px 10px; border: 1px solid #333;
   }
   #sanityLabel { font-size: 9px; color: #888; letter-spacing: 2px; margin-bottom: 4px; }
@@ -94,6 +94,40 @@
   }
   .shake { animation: shake 0.08s infinite; }
 
+  /* SETTINGS BUTTON & MODAL */
+  #settingsBtn {
+    position: absolute; top: 16px; right: 16px; pointer-events: auto;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(0,0,0,0.6); border: 1px solid #444;
+    color: #888; font-size: 20px; cursor: pointer; z-index: 15;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #settingsBtn:hover { color: #fff; background: #222; }
+
+  #settingsModal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 300;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  #settingsModal.active { display: flex; }
+  #settingsModal h3 { color: #a00; margin-bottom: 24px; letter-spacing: 4px; }
+  .setting-row {
+    width: 100%; max-width: 320px; margin-bottom: 20px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .setting-row label { font-size: 12px; color: #ccc; letter-spacing: 1px; display: flex; justify-content: space-between; }
+  .setting-row input[type=range] {
+    width: 100%; height: 6px; -webkit-appearance: none; background: #333; border-radius: 3px; outline: none;
+  }
+  .setting-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+    background: #a00; cursor: pointer; border: 2px solid #fff;
+  }
+  #closeSettings {
+    margin-top: 20px; background: transparent; border: 2px solid #a00;
+    color: #fff; padding: 10px 30px; font-family: inherit; letter-spacing: 2px; cursor: pointer;
+  }
+
   /* LANDSCAPE WARNING */
   #landscapeWarning {
     display: none;
@@ -103,68 +137,44 @@
     color: #a00; text-align: center; padding: 24px;
     font-family: 'Courier New', monospace;
   }
-  #landscapeWarning .rotateIcon {
-    margin-bottom: 24px;
-    animation: rotateHint 2s ease-in-out infinite;
-  }
-  @keyframes rotateHint {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(90deg); }
-  }
-  #landscapeWarning h2 {
-    font-size: 18px; letter-spacing: 3px;
-    margin-bottom: 10px; text-shadow: 0 0 20px #a00;
-  }
-  #landscapeWarning p {
-    color: #666; font-size: 11px; letter-spacing: 2px;
-  }
-
-  @media (orientation: portrait) and (max-width: 1024px) {
-    #landscapeWarning { display: flex; }
-  }
+  #landscapeWarning .rotateIcon { margin-bottom: 24px; animation: rotateHint 2s ease-in-out infinite; }
+  @keyframes rotateHint { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
+  #landscapeWarning h2 { font-size: 18px; letter-spacing: 3px; margin-bottom: 10px; text-shadow: 0 0 20px #a00; }
+  #landscapeWarning p { color: #666; font-size: 11px; letter-spacing: 2px; }
+  @media (orientation: portrait) and (max-width: 1024px) { #landscapeWarning { display: flex; } }
 
   /* TOUCH CONTROLS */
   #touchControls { display: none; position: fixed; inset: 0; pointer-events: none; z-index: 20; }
   #touchControls.active { display: block; }
-
   #joystick {
     position: absolute; left: 24px; bottom: 24px;
     width: 130px; height: 130px; border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-    border: 2px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.18);
     pointer-events: auto; touch-action: none;
   }
   #joystickKnob {
     position: absolute; top: 50%; left: 50%;
     width: 56px; height: 56px; border-radius: 50%;
-    background: rgba(255,255,255,0.28);
-    border: 2px solid rgba(255,255,255,0.5);
-    margin-left: -28px; margin-top: -28px;
-    pointer-events: none;
+    background: rgba(255,255,255,0.28); border: 2px solid rgba(255,255,255,0.5);
+    margin-left: -28px; margin-top: -28px; pointer-events: none;
     transition: background 0.2s;
   }
   #interactBtn {
     position: absolute; right: 28px; bottom: 32px;
     width: 82px; height: 82px; border-radius: 50%;
-    background: rgba(170,0,0,0.4);
-    border: 2px solid rgba(255,255,255,0.45);
+    background: rgba(170,0,0,0.4); border: 2px solid rgba(255,255,255,0.45);
     color: #fff; font-family: inherit; font-size: 16px; font-weight: bold;
-    pointer-events: auto; touch-action: none;
-    transition: background 0.2s, transform 0.1s;
+    pointer-events: auto; touch-action: none; transition: background 0.2s, transform 0.1s;
   }
-  #interactBtn.active {
-    background: rgba(255,50,50,0.7);
-    box-shadow: 0 0 20px rgba(255,50,50,0.8);
-    transform: scale(1.05);
-  }
+  #interactBtn.active { background: rgba(255,50,50,0.7); box-shadow: 0 0 20px rgba(255,50,50,0.8); transform: scale(1.05); }
   #interactBtn:active { transform: scale(0.92); }
 
-  /* Smaller HUD on mobile landscape */
   @media (max-height: 500px) {
     #objectives { padding: 8px 10px; font-size: 10px; max-width: 220px; top: 10px; left: 10px; }
-    #sanityBar { width: 110px; padding: 5px 8px; top: 10px; right: 10px; }
+    #sanityBar { width: 110px; padding: 5px 8px; top: 10px; right: 60px; }
     #subtitle { font-size: 12px; bottom: 40px; }
     #startScreen h1 { font-size: 44px; }
+    #settingsBtn { top: 10px; right: 10px; width: 32px; height: 32px; font-size: 16px; }
   }
 </style>
 <script type="importmap">
@@ -182,9 +192,24 @@
 <div id="hud">
   <div id="objectives"><h3>TUGAS</h3><div id="taskList"></div></div>
   <div id="sanityBar"><div id="sanityLabel">KETENANGAN</div><div id="sanityFill"></div></div>
+  <button id="settingsBtn">⚙</button>
   <div id="crosshair"></div>
   <div id="prompt"></div>
   <div id="subtitle"></div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settingsModal">
+  <h3>PENGATURAN</h3>
+  <div class="setting-row">
+    <label>KECERAHAN LAYAR <span id="brightVal">100%</span></label>
+    <input type="range" id="brightSlider" min="50" max="250" value="100">
+  </div>
+  <div class="setting-row">
+    <label>SENSITIVITAS LIHAT <span id="sensVal">100%</span></label>
+    <input type="range" id="sensSlider" min="20" max="250" value="100">
+  </div>
+  <button id="closeSettings">TUTUP</button>
 </div>
 
 <div id="touchControls">
@@ -249,6 +274,14 @@ const isMobile = (function() {
   if (navigator.maxTouchPoints > 0 && window.matchMedia('(pointer: coarse)').matches) return true;
   return false;
 })();
+
+// ============================================================
+// SETTINGS STATE
+// ============================================================
+const settings = {
+  brightness: 1.0, // 1 = normal
+  sensitivity: 1.0 // 1 = normal
+};
 
 // ============================================================
 // AUDIO SYSTEM
@@ -447,13 +480,10 @@ class AudioMan {
     osc.start(t); osc.stop(t + 0.3);
   }
 
-  // ⚡ LOUD THUNDER
   thunder() {
     if (!this.ctx) return;
     const t = this.ctx.currentTime;
     const sr = this.ctx.sampleRate;
-
-    // Sharp crack
     const crackBuf = this.ctx.createBuffer(1, Math.floor(sr * 0.2), sr);
     const crackData = crackBuf.getChannelData(0);
     for (let i = 0; i < crackData.length; i++) {
@@ -470,7 +500,6 @@ class AudioMan {
     crack.connect(crackHP).connect(crackGain).connect(this.master);
     crack.start(t);
 
-    // Deep rumble
     const rumbleBuf = this.ctx.createBuffer(1, Math.floor(sr * 3), sr);
     const rumbleData = rumbleBuf.getChannelData(0);
     for (let i = 0; i < rumbleData.length; i++) {
@@ -501,19 +530,25 @@ renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = false;
 
+// Tone mapping for brightness control
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = settings.brightness;
+
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x050508);
-scene.fog = new THREE.Fog(0x050508, isMobile ? 3 : 3, isMobile ? 16 : 20);
+scene.background = new THREE.Color(0x0a0a0f); // Agak terang dikit dari sebelumnya (0x050508)
+scene.fog = new THREE.Fog(0x0a0a0f, isMobile ? 3 : 3, isMobile ? 18 : 22); // Fog lebih jauh
 
 const camera = new THREE.PerspectiveCamera(78, window.innerWidth / window.innerHeight, 0.1, 60);
 camera.position.set(0, 1.65, 5);
 camera.rotation.order = 'YXZ';
 scene.add(camera);
 
-const ambient = new THREE.AmbientLight(0x2a2828, 0.9);
+// Ambient dinaikin biar ga pitch black
+const ambient = new THREE.AmbientLight(0x4a4848, 1.5); 
 scene.add(ambient);
 
-const flashlight = new THREE.SpotLight(0xfff3d0, 2.2, 12, Math.PI / 6, 0.5, 1.5);
+// Flashlight dinaikin intensitasnya
+const flashlight = new THREE.SpotLight(0xfff3d0, 3.5, 14, Math.PI / 6, 0.5, 1.2);
 camera.add(flashlight);
 const flashTarget = new THREE.Object3D();
 flashTarget.position.set(0, 0, -1);
@@ -521,8 +556,8 @@ camera.add(flashTarget);
 flashlight.target = flashTarget;
 
 const roomLights = [];
-function addRoomLight(x, z, intensity = 0.6, color = 0xffaa66) {
-  const light = new THREE.PointLight(color, intensity, 8, 1.5);
+function addRoomLight(x, z, intensity = 0.8, color = 0xffaa66) {
+  const light = new THREE.PointLight(color, intensity, 9, 1.5);
   light.position.set(x, 2.7, z);
   scene.add(light);
   roomLights.push({ light, baseIntensity: intensity, flickerOffset: Math.random() * 10 });
@@ -537,28 +572,22 @@ const colliders = [];
 const interactables = [];
 const doors = {};
 
-// Materials (Lambert = cheaper for mobile)
-const matWall = new THREE.MeshLambertMaterial({ color: 0x3a3230 });
-const matFloor = new THREE.MeshLambertMaterial({ color: 0x4a3f35 });
-const matCeiling = new THREE.MeshLambertMaterial({ color: 0x1a1515 });
+const matWall = new THREE.MeshLambertMaterial({ color: 0x4a423e });
+const matFloor = new THREE.MeshLambertMaterial({ color: 0x5a4f45 });
+const matCeiling = new THREE.MeshLambertMaterial({ color: 0x2a2525 });
 
 function addWall(x1, z1, x2, z2) {
   let w, d, cx, cz;
   if (Math.abs(x1 - x2) < 0.001) {
-    w = WALL_T; d = Math.abs(z2 - z1);
-    cx = x1; cz = (z1 + z2) / 2;
+    w = WALL_T; d = Math.abs(z2 - z1); cx = x1; cz = (z1 + z2) / 2;
   } else {
-    w = Math.abs(x2 - x1); d = WALL_T;
-    cx = (x2 + x1) / 2; cz = z1;
+    w = Math.abs(x2 - x1); d = WALL_T; cx = (x2 + x1) / 2; cz = z1;
   }
   const geo = new THREE.BoxGeometry(w, WALL_H, d);
   const mesh = new THREE.Mesh(geo, matWall);
   mesh.position.set(cx, WALL_H / 2, cz);
   scene.add(mesh);
-  colliders.push({
-    minX: cx - w/2 - 0.05, maxX: cx + w/2 + 0.05,
-    minZ: cz - d/2 - 0.05, maxZ: cz + d/2 + 0.05
-  });
+  colliders.push({ minX: cx - w/2 - 0.05, maxX: cx + w/2 + 0.05, minZ: cz - d/2 - 0.05, maxZ: cz + d/2 + 0.05 });
   return mesh;
 }
 
@@ -577,39 +606,18 @@ function addFloor(x1, z1, x2, z2) {
 addFloor(-7, -7, 7, 7);
 
 // Outer walls
-addWall(-7, 7, -1, 7);
-addWall(1, 7, 7, 7);
-addWall(-7, -7, 7, -7);
-addWall(-7, -7, -7, 7);
-addWall(7, -7, 7, 7);
-
+addWall(-7, 7, -1, 7); addWall(1, 7, 7, 7); addWall(-7, -7, 7, -7); addWall(-7, -7, -7, 7); addWall(7, -7, 7, 7);
 // Interior z=1
-addWall(-7, 1, -5, 1);
-addWall(-3, 1, -1, 1);
-addWall(1, 1, 2, 1);
-addWall(4, 1, 7, 1);
-
+addWall(-7, 1, -5, 1); addWall(-3, 1, -1, 1); addWall(1, 1, 2, 1); addWall(4, 1, 7, 1);
 // Interior x=-1
-addWall(-1, -3, -1, -2);
-addWall(-1, -1, -1, 1);
-addWall(-1, -7, -1, -3);
-
+addWall(-1, -3, -1, -2); addWall(-1, -1, -1, 1); addWall(-1, -7, -1, -3);
 // Interior x=1
-addWall(1, -3, 1, 1);
-addWall(1, -7, 1, -3);
-
+addWall(1, -3, 1, 1); addWall(1, -7, 1, -3);
 // Interior z=-3
-addWall(-7, -3, -4, -3);
-addWall(-2, -3, -1, -3);
-addWall(-1, -3, -0.5, -3);
-addWall(0.5, -3, 1, -3);
+addWall(-7, -3, -4, -3); addWall(-2, -3, -1, -3); addWall(-1, -3, -0.5, -3); addWall(0.5, -3, 1, -3);
 
-addRoomLight(0, 5, 0.7, 0xffcc88);
-addRoomLight(-4, -1, 0.55, 0xffaa55);
-addRoomLight(0, -1, 0.4, 0xffaa55);
-addRoomLight(-4, -5, 0.5, 0xffaa77);
-addRoomLight(0, -5, 0.4, 0x88aaff);
-addRoomLight(4, -3, 0.5, 0xffaa77);
+addRoomLight(0, 5, 0.8, 0xffcc88); addRoomLight(-4, -1, 0.7, 0xffaa55); addRoomLight(0, -1, 0.5, 0xffaa55);
+addRoomLight(-4, -5, 0.6, 0xffaa77); addRoomLight(0, -5, 0.5, 0x88aaff); addRoomLight(4, -3, 0.6, 0xffaa77);
 
 // ============================================================
 // FAKE SHADOW HELPER
@@ -627,7 +635,7 @@ function addFakeShadow(x, z, w, d) {
 }
 
 // ============================================================
-// PROPS (Lambert default, Standard for emissive)
+// PROPS
 // ============================================================
 const sharedGeos = new Map();
 function getBoxGeo(w, h, d) {
@@ -645,15 +653,10 @@ function box(w, h, d, color, x, y, z, opts = {}) {
   let mat;
   if (opts.emissive !== undefined || opts.metalness !== undefined || opts.roughness !== undefined) {
     mat = new THREE.MeshStandardMaterial({
-      color,
-      roughness: opts.roughness ?? 0.8,
-      metalness: opts.metalness ?? 0,
-      emissive: opts.emissive ?? 0x000000,
-      emissiveIntensity: opts.emissiveIntensity ?? 1
+      color, roughness: opts.roughness ?? 0.8, metalness: opts.metalness ?? 0,
+      emissive: opts.emissive ?? 0x000000, emissiveIntensity: opts.emissiveIntensity ?? 1
     });
-  } else {
-    mat = getLambertMat(color);
-  }
+  } else { mat = getLambertMat(color); }
   const m = new THREE.Mesh(getBoxGeo(w, h, d), mat);
   m.position.set(x, y, z);
   scene.add(m);
@@ -661,94 +664,79 @@ function box(w, h, d, color, x, y, z, opts = {}) {
 }
 
 // --- RUANG TAMU ---
-box(3, 0.7, 1, 0x4a3a2a, -3, 0.35, 6); addFakeShadow(-3, 6, 3.1, 1.1);
-box(3, 0.5, 0.3, 0x3a2a1a, -3, 0.85, 6.35);
-box(2, 0.4, 1, 0x3a2a1a, -3, 0.2, 4.5); addFakeShadow(-3, 4.5, 2.1, 1.1);
-box(2.5, 0.5, 0.6, 0x1a1a1a, 3, 0.25, 6.5); addFakeShadow(3, 6.5, 2.6, 0.7);
+box(3, 0.7, 1, 0x5a4a3a, -3, 0.35, 6); addFakeShadow(-3, 6, 3.1, 1.1);
+box(3, 0.5, 0.3, 0x4a3a2a, -3, 0.85, 6.35);
+box(2, 0.4, 1, 0x4a3a2a, -3, 0.2, 4.5); addFakeShadow(-3, 4.5, 2.1, 1.1);
+box(2.5, 0.5, 0.6, 0x2a2a2a, 3, 0.25, 6.5); addFakeShadow(3, 6.5, 2.6, 0.7);
 const tvScreen = box(2, 1.2, 0.15, 0x111111, 3, 1.2, 6.5, { emissive: 0x000000 });
 interactables.push({ mesh: tvScreen, type: 'tv', label: 'Nonton TV' });
-
-const rug = new THREE.Mesh(new THREE.PlaneGeometry(4, 3), getLambertMat(0x5a2020));
-rug.rotation.x = -Math.PI / 2;
-rug.position.set(0, 0.005, 4.5);
-scene.add(rug);
+const rug = new THREE.Mesh(new THREE.PlaneGeometry(4, 3), getLambertMat(0x6a3030));
+rug.rotation.x = -Math.PI / 2; rug.position.set(0, 0.005, 4.5); scene.add(rug);
 
 // --- DAPUR ---
-box(4, 0.9, 0.8, 0x4a3a2a, -5, 0.45, -1); addFakeShadow(-5, -1, 4.1, 0.9);
-box(1.2, 0.05, 0.7, 0x1a1a1a, -5, 0.93, -1);
-box(0.6, 0.1, 0.5, 0x222222, -5.8, 0.91, -1);
+box(4, 0.9, 0.8, 0x5a4a3a, -5, 0.45, -1); addFakeShadow(-5, -1, 4.1, 0.9);
+box(1.2, 0.05, 0.7, 0x2a2a2a, -5, 0.93, -1);
+box(0.6, 0.1, 0.5, 0x333333, -5.8, 0.91, -1);
 const glass = new THREE.Mesh(
   new THREE.CylinderGeometry(0.08, 0.08, 0.2, 10),
   new THREE.MeshStandardMaterial({ color: 0xcceeff, roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.75 })
 );
-glass.position.set(-5, 1.02, -1);
-scene.add(glass);
+glass.position.set(-5, 1.02, -1); scene.add(glass);
 interactables.push({ mesh: glass, type: 'minum', label: 'Ambil segelas air' });
-
-box(2, 0.7, 1.5, 0x3a2a1a, -5.5, 0.35, 0); addFakeShadow(-5.5, 0, 2.1, 1.6);
-box(0.5, 0.9, 0.5, 0x2a1a0a, -6.5, 0.45, 0.5);
-box(0.5, 0.9, 0.5, 0x2a1a0a, -4.5, 0.45, 0.5);
+box(2, 0.7, 1.5, 0x4a3a2a, -5.5, 0.35, 0); addFakeShadow(-5.5, 0, 2.1, 1.6);
+box(0.5, 0.9, 0.5, 0x3a2a1a, -6.5, 0.45, 0.5); box(0.5, 0.9, 0.5, 0x3a2a1a, -4.5, 0.45, 0.5);
 
 // --- KAMAR TAMU ---
-const bed = box(2, 0.5, 3.5, 0x554466, -4.5, 0.25, -5.5); addFakeShadow(-4.5, -5.5, 2.1, 3.6);
+const bed = box(2, 0.5, 3.5, 0x655577, -4.5, 0.25, -5.5); addFakeShadow(-4.5, -5.5, 2.1, 3.6);
 bed.userData = { type: 'tidur', label: 'Tidur' };
 interactables.push({ mesh: bed, type: 'tidur', label: 'Tidur' });
-box(1.6, 0.2, 0.6, 0xdddddd, -4.5, 0.6, -6.8);
-box(2, 0.8, 0.15, 0x3a2a3a, -4.5, 0.4, -7.2);
-box(1.5, 2, 0.6, 0x3a2a1a, -6.2, 1, -5.5); addFakeShadow(-6.2, -5.5, 1.6, 0.7);
+box(1.6, 0.2, 0.6, 0xeeeeee, -4.5, 0.6, -6.8); box(2, 0.8, 0.15, 0x4a3a4a, -4.5, 0.4, -7.2);
+box(1.5, 2, 0.6, 0x4a3a2a, -6.2, 1, -5.5); addFakeShadow(-6.2, -5.5, 1.6, 0.7);
 
 // --- KAMAR MANDI ---
-box(0.6, 0.4, 0.9, 0xdddddd, 0.2, 0.2, -6);
-box(0.5, 0.8, 0.15, 0xdddddd, 0.2, 0.4, -6.55);
-box(0.8, 0.15, 0.6, 0xcccccc, -0.4, 0.9, -4);
-box(0.8, 1.2, 0.05, 0x556677, -0.4, 1.7, -3.8, { roughness: 0.3, metalness: 0.3 });
+box(0.6, 0.4, 0.9, 0xeeeeee, 0.2, 0.2, -6); box(0.5, 0.8, 0.15, 0xeeeeee, 0.2, 0.4, -6.55);
+box(0.8, 0.15, 0.6, 0xdddddd, -0.4, 0.9, -4);
+box(0.8, 1.2, 0.05, 0x667788, -0.4, 1.7, -3.8, { roughness: 0.3, metalness: 0.3 });
 
 // --- KAMAR UTAMA ---
-box(3, 0.5, 4, 0x444455, 4, 0.25, -4); addFakeShadow(4, -4, 3.1, 4.1);
-box(2.6, 0.2, 0.8, 0xdddddd, 4, 0.6, -5.6);
-box(3, 0.8, 0.15, 0x2a2a3a, 4, 0.4, -6.2);
-box(0.8, 0.7, 0.8, 0x3a2a1a, 6, 0.35, -5); addFakeShadow(6, -5, 0.9, 0.9);
+box(3, 0.5, 4, 0x555566, 4, 0.25, -4); addFakeShadow(4, -4, 3.1, 4.1);
+box(2.6, 0.2, 0.8, 0xeeeeee, 4, 0.6, -5.6); box(3, 0.8, 0.15, 0x3a3a4a, 4, 0.4, -6.2);
+box(0.8, 0.7, 0.8, 0x4a3a2a, 6, 0.35, -5); addFakeShadow(6, -5, 0.9, 0.9);
 const key = new THREE.Mesh(
   new THREE.BoxGeometry(0.12, 0.25, 0.05),
   new THREE.MeshStandardMaterial({ color: 0xddaa33, roughness: 0.3, metalness: 0.8, emissive: 0x442200, emissiveIntensity: 0.6 })
 );
-key.position.set(6, 0.85, -5);
-key.rotation.z = 0.3;
-scene.add(key);
+key.position.set(6, 0.85, -5); key.rotation.z = 0.3; scene.add(key);
 interactables.push({ mesh: key, type: 'kunci', label: 'Ambil kunci' });
-box(1.8, 2.2, 0.6, 0x2a1a1a, 6.2, 1.1, -3); addFakeShadow(6.2, -3, 1.9, 0.7);
+box(1.8, 2.2, 0.6, 0x3a2a2a, 6.2, 1.1, -3); addFakeShadow(6.2, -3, 1.9, 0.7);
 
 // ============================================================
 // DOORS
 // ============================================================
-function makeDoor(x, z, width, hingeSide = 'left', color = 0x4a3a2a) {
+function makeDoor(x, z, width, hingeSide = 'left', color = 0x5a4a3a) {
   const group = new THREE.Group();
-  const panel = new THREE.Mesh(
-    new THREE.BoxGeometry(width, 2.6, 0.08),
-    getLambertMat(color)
-  );
-  panel.position.x = width / 2;
-  panel.position.y = 1.3;
+  const panel = new THREE.Mesh(new THREE.BoxGeometry(width, 2.6, 0.08), getLambertMat(color));
+  panel.position.x = width / 2; panel.position.y = 1.3;
   group.add(panel);
   group.position.set(hingeSide === 'left' ? x : x + width, 0, z);
   scene.add(group);
   return { group, panel, open: false };
 }
 
-const kamarTamuDoor = makeDoor(-4, -3, 2, 'left', 0x5a4a3a);
+const kamarTamuDoor = makeDoor(-4, -3, 2, 'left', 0x6a5a4a);
 const ktDoorCollider = { minX: -4, maxX: -2, minZ: -3.15, maxZ: -2.85 };
 colliders.push(ktDoorCollider);
 interactables.push({ mesh: kamarTamuDoor.panel, type: 'bukaKamarTamu', label: 'Kamar Tamu (Terkunci)' });
 doors.kamarTamu = kamarTamuDoor;
 
-const frontDoor = makeDoor(-1, 7, 2, 'left', 0x3a2a1a);
+const frontDoor = makeDoor(-1, 7, 2, 'left', 0x4a3a2a);
 const fdCollider = { minX: -1, maxX: 1, minZ: 6.85, maxZ: 7.15 };
 colliders.push(fdCollider);
 interactables.push({ mesh: frontDoor.panel, type: 'kabur', label: 'Pintu Keluar' });
 doors.front = frontDoor;
 
 // ============================================================
-// CONTROLS
+// CONTROLS & SENSITIVITY
 // ============================================================
 const keys = {};
 let pointerLocked = false;
@@ -757,19 +745,17 @@ let gameEnded = false;
 let isPaused = false;
 const useTouchControls = isMobile;
 
-// Keyboard
 window.addEventListener('keydown', e => { keys[e.code] = true; });
 window.addEventListener('keyup', e => { keys[e.code] = false; });
 
-// Mouse look (desktop)
 document.addEventListener('mousemove', e => {
   if (!pointerLocked || isPaused) return;
-  camera.rotation.y -= e.movementX * 0.0022;
-  camera.rotation.x -= e.movementY * 0.0022;
+  const sens = 0.0022 * settings.sensitivity;
+  camera.rotation.y -= e.movementX * sens;
+  camera.rotation.x -= e.movementY * sens;
   camera.rotation.x = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camera.rotation.x));
 });
 
-// Pointer lock state
 document.addEventListener('pointerlockchange', () => {
   pointerLocked = document.pointerLockElement === document.body;
   if (gameStarted && !useTouchControls) isPaused = !pointerLocked;
@@ -779,6 +765,44 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ============================================================
+// SETTINGS UI LOGIC
+// ============================================================
+const settingsBtn = $('settingsBtn');
+const settingsModal = $('settingsModal');
+const brightSlider = $('brightSlider');
+const sensSlider = $('sensSlider');
+const brightVal = $('brightVal');
+const sensVal = $('sensVal');
+
+function updateBrightness(val) {
+  settings.brightness = val / 100;
+  renderer.toneMappingExposure = settings.brightness;
+  brightVal.textContent = val + '%';
+}
+
+function updateSensitivity(val) {
+  settings.sensitivity = val / 100;
+  sensVal.textContent = val + '%';
+}
+
+brightSlider.addEventListener('input', (e) => updateBrightness(e.target.value));
+sensSlider.addEventListener('input', (e) => updateSensitivity(e.target.value));
+
+settingsBtn.addEventListener('click', () => {
+  settingsModal.classList.add('active');
+  if (document.pointerLockElement) document.exitPointerLock();
+  isPaused = true;
+});
+
+$('closeSettings').addEventListener('click', () => {
+  settingsModal.classList.remove('active');
+  isPaused = false;
+  if (gameStarted && !useTouchControls && !gameEnded) {
+    document.body.requestPointerLock();
+  }
 });
 
 // ============================================================
@@ -794,9 +818,7 @@ let joystickCenterX = 0, joystickCenterY = 0;
 const joystickDelta = { x: 0, y: 0 };
 const JOYSTICK_RADIUS = 55;
 
-if (useTouchControls) {
-  touchControlsEl.classList.add('active');
-}
+if (useTouchControls) { touchControlsEl.classList.add('active'); }
 
 joystickEl.addEventListener('touchstart', e => {
   e.preventDefault();
@@ -814,10 +836,7 @@ function updateJoystick(cx, cy) {
   let dx = cx - joystickCenterX;
   let dy = cy - joystickCenterY;
   const dist = Math.sqrt(dx*dx + dy*dy);
-  if (dist > JOYSTICK_RADIUS) {
-    dx = dx / dist * JOYSTICK_RADIUS;
-    dy = dy / dist * JOYSTICK_RADIUS;
-  }
+  if (dist > JOYSTICK_RADIUS) { dx = dx / dist * JOYSTICK_RADIUS; dy = dy / dist * JOYSTICK_RADIUS; }
   knobEl.style.transform = `translate(${dx}px, ${dy}px)`;
   joystickDelta.x = dx / JOYSTICK_RADIUS;
   joystickDelta.y = dy / JOYSTICK_RADIUS;
@@ -825,21 +844,15 @@ function updateJoystick(cx, cy) {
 
 document.addEventListener('touchmove', e => {
   for (const touch of e.changedTouches) {
-    if (touch.identifier === joystickTouchId) {
-      updateJoystick(touch.clientX, touch.clientY);
-      e.preventDefault();
-    }
+    if (touch.identifier === joystickTouchId) { updateJoystick(touch.clientX, touch.clientY); e.preventDefault(); }
   }
 }, { passive: false });
 
 document.addEventListener('touchend', e => {
   for (const touch of e.changedTouches) {
     if (touch.identifier === joystickTouchId) {
-      joystickTouchId = null;
-      joystickDelta.x = 0;
-      joystickDelta.y = 0;
-      knobEl.style.transform = 'translate(0, 0)';
-      knobEl.style.background = 'rgba(255,255,255,0.28)';
+      joystickTouchId = null; joystickDelta.x = 0; joystickDelta.y = 0;
+      knobEl.style.transform = 'translate(0, 0)'; knobEl.style.background = 'rgba(255,255,255,0.28)';
     }
   }
 });
@@ -847,26 +860,20 @@ document.addEventListener('touchend', e => {
 document.addEventListener('touchcancel', e => {
   for (const touch of e.changedTouches) {
     if (touch.identifier === joystickTouchId) {
-      joystickTouchId = null;
-      joystickDelta.x = 0;
-      joystickDelta.y = 0;
+      joystickTouchId = null; joystickDelta.x = 0; joystickDelta.y = 0;
       knobEl.style.transform = 'translate(0, 0)';
     }
   }
 });
 
-// Touch look (canvas)
 let lookTouchId = null;
 let lookPrevX = 0, lookPrevY = 0;
-const TOUCH_LOOK_SENS = 0.004;
 
 canvas.addEventListener('touchstart', e => {
   if (!gameStarted || isPaused || gameEnded) return;
   if (lookTouchId !== null) return;
   const touch = e.changedTouches[0];
-  lookTouchId = touch.identifier;
-  lookPrevX = touch.clientX;
-  lookPrevY = touch.clientY;
+  lookTouchId = touch.identifier; lookPrevX = touch.clientX; lookPrevY = touch.clientY;
 }, { passive: true });
 
 canvas.addEventListener('touchmove', e => {
@@ -875,33 +882,20 @@ canvas.addEventListener('touchmove', e => {
     if (touch.identifier === lookTouchId) {
       const dx = touch.clientX - lookPrevX;
       const dy = touch.clientY - lookPrevY;
-      camera.rotation.y -= dx * TOUCH_LOOK_SENS;
-      camera.rotation.x -= dy * TOUCH_LOOK_SENS;
+      const baseSens = 0.004 * settings.sensitivity;
+      camera.rotation.y -= dx * baseSens;
+      camera.rotation.x -= dy * baseSens;
       camera.rotation.x = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camera.rotation.x));
-      lookPrevX = touch.clientX;
-      lookPrevY = touch.clientY;
+      lookPrevX = touch.clientX; lookPrevY = touch.clientY;
       e.preventDefault();
     }
   }
 }, { passive: false });
 
-canvas.addEventListener('touchend', e => {
-  for (const touch of e.changedTouches) {
-    if (touch.identifier === lookTouchId) lookTouchId = null;
-  }
-});
+canvas.addEventListener('touchend', e => { for (const touch of e.changedTouches) { if (touch.identifier === lookTouchId) lookTouchId = null; } });
+canvas.addEventListener('touchcancel', e => { for (const touch of e.changedTouches) { if (touch.identifier === lookTouchId) lookTouchId = null; } });
 
-canvas.addEventListener('touchcancel', e => {
-  for (const touch of e.changedTouches) {
-    if (touch.identifier === lookTouchId) lookTouchId = null;
-  }
-});
-
-// Interact button
-function doInteract(e) {
-  if (e) { e.preventDefault(); e.stopPropagation(); }
-  tryInteract();
-}
+function doInteract(e) { if (e) { e.preventDefault(); e.stopPropagation(); } tryInteract(); }
 interactBtn.addEventListener('touchstart', doInteract, { passive: false });
 interactBtn.addEventListener('click', doInteract);
 
@@ -917,8 +911,7 @@ let stepTimer = 0;
 
 function canMoveTo(x, z) {
   for (const c of colliders) {
-    if (x + PLAYER_RADIUS > c.minX && x - PLAYER_RADIUS < c.maxX &&
-        z + PLAYER_RADIUS > c.minZ && z - PLAYER_RADIUS < c.maxZ) return false;
+    if (x + PLAYER_RADIUS > c.minX && x - PLAYER_RADIUS < c.maxX && z + PLAYER_RADIUS > c.minZ && z - PLAYER_RADIUS < c.maxZ) return false;
   }
   return true;
 }
@@ -927,23 +920,18 @@ function updatePlayer(dt) {
   if (!gameStarted || isPaused || gameEnded) return;
   if (!useTouchControls && !pointerLocked) return;
 
-  camera.getWorldDirection(_forward);
-  _forward.y = 0;
-  _forward.normalize();
+  camera.getWorldDirection(_forward); _forward.y = 0; _forward.normalize();
   _right.crossVectors(_forward, _up).normalize();
 
   let inputX = (keys['KeyD'] ? 1 : 0) - (keys['KeyA'] ? 1 : 0) + joystickDelta.x;
   let inputZ = (keys['KeyW'] ? 1 : 0) - (keys['KeyS'] ? 1 : 0) - joystickDelta.y;
-
   const mag = Math.sqrt(inputX*inputX + inputZ*inputZ);
   if (mag > 1) { inputX /= mag; inputZ /= mag; }
 
   const running = keys['ShiftLeft'] || keys['ShiftRight'] || Math.abs(joystickDelta.x) + Math.abs(joystickDelta.y) > 1.3;
   const speed = running ? 4.2 : 2.6;
-
   const dx = (_forward.x * inputZ + _right.x * inputX) * speed * dt;
   const dz = (_forward.z * inputZ + _right.z * inputX) * speed * dt;
-
   const moving = Math.abs(dx) > 0.001 || Math.abs(dz) > 0.001;
 
   if (canMoveTo(camera.position.x + dx, camera.position.z)) camera.position.x += dx;
@@ -952,10 +940,7 @@ function updatePlayer(dt) {
 
   if (moving) {
     stepTimer -= dt;
-    if (stepTimer <= 0) {
-      audio.footstep();
-      stepTimer = running ? 0.28 : 0.45;
-    }
+    if (stepTimer <= 0) { audio.footstep(); stepTimer = running ? 0.28 : 0.45; }
   }
 }
 
@@ -968,10 +953,7 @@ let currentTarget = null;
 
 function updateInteraction() {
   if (!gameStarted || isPaused || gameEnded) {
-    $('prompt').classList.remove('show');
-    interactBtn.classList.remove('active');
-    currentTarget = null;
-    return;
+    $('prompt').classList.remove('show'); interactBtn.classList.remove('active'); currentTarget = null; return;
   }
   raycaster.setFromCamera(_center, camera);
   const meshes = interactables.map(i => i.mesh);
@@ -979,9 +961,7 @@ function updateInteraction() {
   const prompt = $('prompt');
 
   let found = null;
-  if (hits.length > 0 && hits[0].distance < 2.8) {
-    found = interactables.find(i => i.mesh === hits[0].object);
-  }
+  if (hits.length > 0 && hits[0].distance < 2.8) found = interactables.find(i => i.mesh === hits[0].object);
 
   if (found && !found.hidden) {
     currentTarget = found;
@@ -989,12 +969,9 @@ function updateInteraction() {
     if (found.type === 'bukaKamarTamu' && !state.hasKey) label = 'Kamar Tamu (Terkunci)';
     if (found.type === 'bukaKamarTamu' && state.hasKey) label = 'Buka Kamar Tamu';
     prompt.textContent = `[E] ${label}`;
-    prompt.classList.add('show');
-    interactBtn.classList.add('active');
+    prompt.classList.add('show'); interactBtn.classList.add('active');
   } else {
-    currentTarget = null;
-    prompt.classList.remove('show');
-    interactBtn.classList.remove('active');
+    currentTarget = null; prompt.classList.remove('show'); interactBtn.classList.remove('active');
   }
 }
 
@@ -1009,53 +986,41 @@ function tryInteract() {
     audio.creak(); completeTask('minum');
     say('Kamu', 'Ah, seger juga...');
     setTimeout(() => say('Suara dari suatu tempat', 'Minum... minum... nanti kamu butuh tenaga...'), 2500);
-  }
-  else if (t === 'kunci') {
+  } else if (t === 'kunci') {
     if (state.tasks.kunci.done) return;
     currentTarget.mesh.visible = false; currentTarget.hidden = true;
-    state.hasKey = true;
-    audio.creak(); completeTask('kunci');
+    state.hasKey = true; audio.creak(); completeTask('kunci');
     say('Kamu', 'Ini kuncinya. Kamar tamu ada di seberang dapur.');
-  }
-  else if (t === 'bukaKamarTamu') {
+  } else if (t === 'bukaKamarTamu') {
     if (doors.kamarTamu.open) return;
     if (!state.hasKey) { say('Kamu', 'Terkunci... kuncinya di mana ya?'); return; }
-    doors.kamarTamu.open = true;
-    audio.creak();
-    const idx = colliders.indexOf(ktDoorCollider);
-    if (idx > -1) colliders.splice(idx, 1);
+    doors.kamarTamu.open = true; audio.creak();
+    const idx = colliders.indexOf(ktDoorCollider); if (idx > -1) colliders.splice(idx, 1);
     const startTime = performance.now();
     const anim = () => {
       const p = Math.min((performance.now() - startTime) / 900, 1);
       doors.kamarTamu.group.rotation.y = -p * Math.PI / 2;
       if (p < 1) requestAnimationFrame(anim);
     };
-    anim();
-    completeTask('buka');
+    anim(); completeTask('buka');
     setTimeout(() => {
       say('Kamu', 'Oke, kamar tamu kebuka.');
       setTimeout(() => say('Suara aneh', 'ssssst... jangan tidur dulu...'), 3000);
     }, 800);
-  }
-  else if (t === 'tv') {
+  } else if (t === 'tv') {
     if (state.tasks.tv.done) return;
     if (!state.tasks.buka.done) { say('Kamu', 'Nanti aja, aku harus buka kamar tamu dulu.'); return; }
-    completeTask('tv');
-    watchTV();
-  }
-  else if (t === 'tidur') {
+    completeTask('tv'); watchTV();
+  } else if (t === 'tidur') {
     if (state.phase !== 'malam') { say('Kamu', 'Nanti aja. Masih sore.'); return; }
     triggerEnding('bertahan');
-  }
-  else if (t === 'kabur') {
+  } else if (t === 'kabur') {
     if (state.phase !== 'malam') { say('Kamu', 'Belum, aku masih ada urusan.'); return; }
     triggerEnding('kabur');
   }
 }
 
-window.addEventListener('keydown', e => {
-  if (e.code === 'KeyE') tryInteract();
-});
+window.addEventListener('keydown', e => { if (e.code === 'KeyE') tryInteract(); });
 
 // ============================================================
 // GAME STATE
@@ -1069,13 +1034,9 @@ const state = {
     tv: { label: 'Nonton TV sebentar', done: false },
     akhir: { label: 'Bertahan sampai pagi atau kabur', done: false },
   },
-  hasKey: false,
-  sanity: 100,
-  malamTime: 0,
+  hasKey: false, sanity: 100, malamTime: 0,
   nextFake: 12, nextReal: 40, nextBurst: 120,
-  activeTasks: ['minum'],
-  elapsed: 0,
-  endingStarted: false,
+  activeTasks: ['minum'], elapsed: 0, endingStarted: false,
 };
 
 function updateObjectives() {
@@ -1090,10 +1051,7 @@ function updateObjectives() {
   $('taskList').innerHTML = html;
 }
 
-function activateTask(key) {
-  if (!state.activeTasks.includes(key)) state.activeTasks.push(key);
-  updateObjectives();
-}
+function activateTask(key) { if (!state.activeTasks.includes(key)) state.activeTasks.push(key); updateObjectives(); }
 function completeTask(key) {
   state.tasks[key].done = true;
   state.activeTasks = state.activeTasks.filter(k => k !== key);
@@ -1120,11 +1078,8 @@ function updateSanity(v) {
 }
 
 async function creepyText(text, duration = 1500) {
-  const el = $('creepyText');
-  el.textContent = text;
-  el.style.opacity = '1';
-  await delay(duration);
-  el.style.opacity = '0';
+  const el = $('creepyText'); el.textContent = text; el.style.opacity = '1';
+  await delay(duration); el.style.opacity = '0';
 }
 
 // ============================================================
@@ -1135,13 +1090,10 @@ function flickerLights() {
   let count = 0;
   const interval = setInterval(() => {
     ambient.intensity = Math.random() > 0.5 ? baseAmbient * 0.1 : baseAmbient;
-    roomLights.forEach(rl => {
-      rl.light.intensity = Math.random() > 0.5 ? rl.baseIntensity * 0.2 : rl.baseIntensity;
-    });
+    roomLights.forEach(rl => { rl.light.intensity = Math.random() > 0.5 ? rl.baseIntensity * 0.2 : rl.baseIntensity; });
     count++;
     if (count > 10) {
-      clearInterval(interval);
-      ambient.intensity = baseAmbient;
+      clearInterval(interval); ambient.intensity = baseAmbient;
       roomLights.forEach(rl => rl.light.intensity = rl.baseIntensity);
     }
   }, 70);
@@ -1151,23 +1103,15 @@ let shadowPlane = null;
 function shadowPass() {
   audio.whisper();
   if (!shadowPlane) {
-    shadowPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.9, 2.6),
-      new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false })
-    );
+    shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 2.6), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false }));
   }
-  const fwd = new THREE.Vector3();
-  camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
+  const fwd = new THREE.Vector3(); camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
   const rightV = new THREE.Vector3(-fwd.z, 0, fwd.x);
-  const basePos = camera.position.clone().add(fwd.clone().multiplyScalar(4.5));
-  basePos.y = 1.4;
+  const basePos = camera.position.clone().add(fwd.clone().multiplyScalar(4.5)); basePos.y = 1.4;
   const startPos = basePos.clone().add(rightV.clone().multiplyScalar(-4));
   const endPos = basePos.clone().add(rightV.clone().multiplyScalar(4));
-  shadowPlane.position.copy(startPos);
-  shadowPlane.visible = true;
-  scene.add(shadowPlane);
-  const dur = 900;
-  const start = performance.now();
+  shadowPlane.position.copy(startPos); shadowPlane.visible = true; scene.add(shadowPlane);
+  const dur = 900; const start = performance.now();
   const anim = () => {
     const t = (performance.now() - start) / dur;
     if (t >= 1) { shadowPlane.visible = false; scene.remove(shadowPlane); return; }
@@ -1179,25 +1123,16 @@ function shadowPass() {
 }
 
 function doorSlam() {
-  audio.slam();
-  document.body.classList.add('shake');
+  audio.slam(); document.body.classList.add('shake');
   setTimeout(() => document.body.classList.remove('shake'), 400);
-  const f = $('flash');
-  f.style.transition = 'opacity 0.1s';
-  f.style.opacity = '0.3';
+  const f = $('flash'); f.style.transition = 'opacity 0.1s'; f.style.opacity = '0.3';
   setTimeout(() => { f.style.opacity = '0'; }, 100);
 }
 
 async function thunderStrike() {
-  audio.thunder();
-  updateSanity(-4);
-  const f = $('flash');
-  f.style.transition = 'none';
-  f.style.opacity = '0.85';
-  setTimeout(() => {
-    f.style.transition = 'opacity 0.7s';
-    f.style.opacity = '0';
-  }, 60);
+  audio.thunder(); updateSanity(-4);
+  const f = $('flash'); f.style.transition = 'none'; f.style.opacity = '0.85';
+  setTimeout(() => { f.style.transition = 'opacity 0.7s'; f.style.opacity = '0'; }, 60);
   document.body.classList.add('shake');
   setTimeout(() => document.body.classList.remove('shake'), 500);
 }
@@ -1210,10 +1145,8 @@ async function fakeJumpscare() {
   else if (type === 2) doorSlam();
   else if (type === 3) {
     const texts = ['DI BELAKANGMU', 'JANGAN MENOLEH', 'AKU LIHAT KAMU', 'SSST...', 'KELUAR...', 'TIDAK ADA YANG MENOLONGMU'];
-    audio.whisper();
-    creepyText(texts[Math.floor(Math.random() * texts.length)], 1200);
-  }
-  else if (type === 4) { audio.heartbeat(); audio.whisper(); }
+    audio.whisper(); creepyText(texts[Math.floor(Math.random() * texts.length)], 1200);
+  } else if (type === 4) { audio.heartbeat(); audio.whisper(); }
   else if (type === 5) thunderStrike();
 }
 
@@ -1221,80 +1154,156 @@ async function fakeJumpscare() {
 // CANVAS FACE JUMPSCARE
 // ============================================================
 function drawFace(ctx, type, w, h) {
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h);
   const cx = w / 2, cy = h / 2;
 
   if (type === 'kuntilanak') {
-    ctx.fillStyle = '#050505';
-    ctx.beginPath();
-    ctx.ellipse(cx, cy + h * 0.15, w * 0.35, h * 0.55, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#e8dcc8';
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, w * 0.12, h * 0.2, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#000';
-    ctx.beginPath(); ctx.ellipse(cx - w * 0.05, cy - h * 0.05, w * 0.03, h * 0.05, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#050505'; ctx.beginPath(); ctx.ellipse(cx, cy + h * 0.15, w * 0.35, h * 0.55, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#e8dcc8'; ctx.beginPath(); ctx.ellipse(cx, cy, w * 0.12, h * 0.2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(cx - w * 0.05, cy - h * 0.05, w * 0.03, h * 0.05, 0, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.ellipse(cx + w * 0.05, cy - h * 0.05, w * 0.03, h * 0.05, 0, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = '#8b0000'; ctx.lineWidth = 4;
     ctx.beginPath(); ctx.moveTo(cx - w * 0.05, cy - h * 0.02); ctx.lineTo(cx - w * 0.06, cy + h * 0.1); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(cx + w * 0.05, cy - h * 0.02); ctx.lineTo(cx + w * 0.06, cy + h * 0.1); ctx.stroke();
-    ctx.fillStyle = '#1a0000';
-    ctx.beginPath(); ctx.ellipse(cx, cy + h * 0.11, w * 0.035, h * 0.06, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#d0c8b8';
-    for (let i = -2; i <= 2; i++) ctx.fillRect(cx + i * w * 0.012 - w * 0.004, cy + h * 0.055, w * 0.008, h * 0.018);
+    ctx.fillStyle = '#1a0000'; ctx.beginPath(); ctx.ellipse(cx, cy + h * 0.11, w * 0.035, h * 0.06, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#d0c8b8'; for (let i = -2; i <= 2; i++) ctx.fillRect(cx + i * w * 0.012 - w * 0.004, cy + h * 0.055, w * 0.008, h * 0.018);
     ctx.strokeStyle = '#000';
     for (let i = 0; i < 25; i++) {
-      const angle = Math.PI + Math.random() * Math.PI;
-      const len = h * 0.35 + Math.random() * h * 0.2;
-      const sx = cx + Math.cos(angle) * w * 0.11;
-      const sy = cy + Math.sin(angle) * h * 0.18;
-      ctx.lineWidth = 2 + Math.random() * 2;
-      ctx.beginPath(); ctx.moveTo(sx, sy);
-      ctx.lineTo(sx + Math.cos(angle) * len * 0.25, sy + Math.sin(angle) * len); ctx.stroke();
+      const angle = Math.PI + Math.random() * Math.PI; const len = h * 0.35 + Math.random() * h * 0.2;
+      const sx = cx + Math.cos(angle) * w * 0.11; const sy = cy + Math.sin(angle) * h * 0.18;
+      ctx.lineWidth = 2 + Math.random() * 2; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + Math.cos(angle) * len * 0.25, sy + Math.sin(angle) * len); ctx.stroke();
     }
   }
   else if (type === 'pocong') {
-    ctx.fillStyle = '#d8d2c4';
-    ctx.beginPath(); ctx.ellipse(cx, cy, w * 0.18, h * 0.28, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#e8e0d0';
-    ctx.beginPath(); ctx.ellipse(cx, cy - h * 0.05, w * 0.13, h * 0.17, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#000';
-    ctx.beginPath(); ctx.ellipse(cx - w * 0.045, cy - h * 0.06, w * 0.025, h * 0.04, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#d8d2c4'; ctx.beginPath(); ctx.ellipse(cx, cy, w * 0.18, h * 0.28, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#e8e0d0'; ctx.beginPath(); ctx.ellipse(cx, cy - h * 0.05, w * 0.13, h * 0.17, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(cx - w * 0.045, cy - h * 0.06, w * 0.025, h * 0.04, 0, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.ellipse(cx + w * 0.045, cy - h * 0.06, w * 0.025, h * 0.04, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#a00000';
-    ctx.beginPath(); ctx.arc(cx - w * 0.045, cy - h * 0.06, w * 0.01, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#a00000'; ctx.beginPath(); ctx.arc(cx - w * 0.045, cy - h * 0.06, w * 0.01, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(cx + w * 0.045, cy - h * 0.06, w * 0.01, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#d8d2c4';
-    ctx.beginPath(); ctx.ellipse(cx, cy + h * 0.08, w * 0.14, h * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#d8d2c4'; ctx.beginPath(); ctx.ellipse(cx, cy + h * 0.08, w * 0.14, h * 0.1, 0, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = '#a89888'; ctx.lineWidth = 2;
-    for (let i = 0; i < 5; i++) {
-      const y = cy + h * 0.02 + i * h * 0.03;
-      ctx.beginPath(); ctx.moveTo(cx - w * 0.14, y); ctx.lineTo(cx + w * 0.14, y); ctx.stroke();
-    }
+    for (let i = 0; i < 5; i++) { const y = cy + h * 0.02 + i * h * 0.03; ctx.beginPath(); ctx.moveTo(cx - w * 0.14, y); ctx.lineTo(cx + w * 0.14, y); ctx.stroke(); }
   }
   else if (type === 'genderuwo') {
-    ctx.fillStyle = '#1a0f08';
-    ctx.beginPath(); ctx.ellipse(cx, cy, w * 0.22, h * 0.3, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#1a0f08'; ctx.beginPath(); ctx.ellipse(cx, cy, w * 0.22, h * 0.3, 0, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = '#0a0503'; ctx.lineWidth = 1;
     for (let i = 0; i < 150; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const r = Math.random() * w * 0.2;
-      const x = cx + Math.cos(a) * r;
-      const y = cy + Math.sin(a) * r * 1.5;
-      ctx.beginPath(); ctx.moveTo(x, y);
-      ctx.lineTo(x + Math.cos(a) * 5, y + Math.sin(a) * 5); ctx.stroke();
+      const a = Math.random() * Math.PI * 2; const r = Math.random() * w * 0.2;
+      const x = cx + Math.cos(a) * r; const y = cy + Math.sin(a) * r * 1.5;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * 5, y + Math.sin(a) * 5); ctx.stroke();
     }
     const g1 = ctx.createRadialGradient(cx - w * 0.07, cy - h * 0.06, 0, cx - w * 0.07, cy - h * 0.06, w * 0.06);
-    g1.addColorStop(0, '#ff2020'); g1.addColorStop(0.5, '#800000'); g1.addColorStop(1, 'rgba(255,0,0,0)');
-    ctx.fillStyle = g1;
+    g1.addColorStop(0, '#ff2020'); g1.addColorStop(0.5, '#800000'); g1.addColorStop(1, 'rgba(255,0,0,0)'); ctx.fillStyle = g1;
     ctx.beginPath(); ctx.arc(cx - w * 0.07, cy - h * 0.06, w * 0.06, 0, Math.PI * 2); ctx.fill();
     const g2 = ctx.createRadialGradient(cx + w * 0.07, cy - h * 0.06, 0, cx + w * 0.07, cy - h * 0.06, w * 0.06);
-    g2.addColorStop(0, '#ff2020'); g2.addColorStop(0.5, '#800000'); g2.addColorStop(1, 'rgba(255,0,0,0)');
-    ctx.fillStyle = g2;
+    g2.addColorStop(0, '#ff2020'); g2.addColorStop(0.5, '#800000'); g2.addColorStop(1, 'rgba(255,0,0,0)'); ctx.fillStyle = g2;
     ctx.beginPath(); ctx.arc(cx + w * 0.07, cy - h * 0.06, w * 0.06, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#d8d0c0';
-    ctx.beginPath(); ctx.moveTo(cx - w * 0.04, cy + h * 0.08); ctx.lineTo(cx - w * 0.025, cy + h * 0.15); ctx.lineTo(cx - w * 0.01, cy + h * 0.08); ctx.fill();
+    ctx.fillStyle = '#d8d0c0'; ctx.beginPath(); ctx.moveTo(cx - w * 0.04, cy + h * 0.08); ctx.lineTo(cx - w * 0.025, cy + h * 0.15); ctx.lineTo(cx - w * 0.01, cy + h * 0.08); ctx.fill();
     ctx.beginPath(); ctx.moveTo(cx + w * 0.01, cy + h * 0.08); ctx.lineTo(cx + w * 0.025, cy + h * 0.15); ctx.lineTo(cx + w * 0.04, cy + h * 0.08); ctx.fill();
+  }
+  // 💀 HANTU BARU 1: Hantu Rias (Dari Foto Pertama)
+  else if (type === 'hantu_rias') {
+    // Rambut hitam panjang
+    ctx.fillStyle = '#080808';
+    ctx.beginPath(); ctx.ellipse(cx, cy + h * 0.2, w * 0.38, h * 0.6, 0, 0, Math.PI * 2); ctx.fill();
+    
+    // Wajah pucat
+    ctx.fillStyle = '#e8e0d0';
+    ctx.beginPath(); ctx.ellipse(cx, cy, w * 0.15, h * 0.22, 0, 0, Math.PI * 2); ctx.fill();
+    
+    // Riasan mata hitam besar
+    ctx.fillStyle = '#050505';
+    ctx.beginPath(); ctx.ellipse(cx - w * 0.06, cy - h * 0.05, w * 0.06, h * 0.08, 0.2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx + w * 0.06, cy - h * 0.05, w * 0.06, h * 0.08, -0.2, 0, Math.PI * 2); ctx.fill();
+    
+    // Mata putih melotot
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(cx - w * 0.06, cy - h * 0.05, w * 0.02, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + w * 0.06, cy - h * 0.05, w * 0.02, 0, Math.PI * 2); ctx.fill();
+    // Pupil kecil
+    ctx.fillStyle = '#000000';
+    ctx.beginPath(); ctx.arc(cx - w * 0.06, cy - h * 0.05, w * 0.005, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + w * 0.06, cy - h * 0.05, w * 0.005, 0, Math.PI * 2); ctx.fill();
+    
+    // Mulut lebar dengan darah coklat/merah
+    ctx.fillStyle = '#3a0000';
+    ctx.beginPath(); ctx.ellipse(cx, cy + h * 0.12, w * 0.07, h * 0.04, 0, 0, Math.PI * 2); ctx.fill();
+    // Gigi
+    ctx.fillStyle = '#c8b8a8';
+    for (let i = -3; i <= 3; i++) {
+      ctx.fillRect(cx + i * w * 0.018 - w * 0.005, cy + h * 0.095, w * 0.01, h * 0.015);
+    }
+    // Efek rambut menutupi dahi
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.moveTo(cx - w * 0.12, cy - h * 0.15); ctx.lineTo(cx, cy - h * 0.05); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + w * 0.1, cy - h * 0.15); ctx.lineTo(cx, cy - h * 0.05); ctx.stroke();
+  }
+  // 💀 HANTU BARU 2: Hantu Senyum (Dari Foto Kedua)
+  else if (type === 'hantu_senyum') {
+    // Latar gelap gulita
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h);
+    
+    // Wajah kontras tinggi (hitam putih)
+    const grd = ctx.createRadialGradient(cx, cy, w*0.05, cx, cy, w*0.25);
+    grd.addColorStop(0, '#888888');
+    grd.addColorStop(1, '#000000');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.ellipse(cx, cy, w * 0.2, h * 0.28, 0, 0, Math.PI * 2); ctx.fill();
+
+    // Mata hitam kelam dengan pupil putih kecil
+    ctx.fillStyle = '#000';
+    ctx.beginPath(); ctx.ellipse(cx - w * 0.07, cy - h * 0.06, w * 0.06, h * 0.07, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx + w * 0.07, cy - h * 0.06, w * 0.06, h * 0.07, 0, 0, Math.PI * 2); ctx.fill();
+    
+    // Sorot mata putih (glowing)
+    ctx.fillStyle = '#fff';
+    ctx.shadowColor = '#fff'; ctx.shadowBlur = 20;
+    ctx.beginPath(); ctx.arc(cx - w * 0.07, cy - h * 0.06, w * 0.015, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + w * 0.07, cy - h * 0.06, w * 0.015, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0; // reset
+
+    // Senyum lebar mengerikan
+    ctx.fillStyle = '#000'; // Mulut gelap
+    ctx.beginPath();
+    ctx.moveTo(cx - w * 0.15, cy + h * 0.05);
+    ctx.quadraticCurveTo(cx, cy + h * 0.25, cx + w * 0.15, cy + h * 0.05);
+    ctx.quadraticCurveTo(cx, cy + h * 0.12, cx - w * 0.15, cy + h * 0.05);
+    ctx.fill();
+    
+    // Gigi-gigi (kontras tinggi)
+    ctx.fillStyle = '#ddd';
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
+    // Gigi atas
+    for (let i = -4; i <= 4; i++) {
+      const x = cx + i * w * 0.028;
+      ctx.beginPath();
+      ctx.moveTo(x - w*0.01, cy + h*0.06);
+      ctx.lineTo(x + w*0.01, cy + h*0.06);
+      ctx.lineTo(x + w*0.015, cy + h*0.1);
+      ctx.lineTo(x - w*0.015, cy + h*0.1);
+      ctx.fill(); ctx.stroke();
+    }
+    // Gigi bawah
+    for (let i = -4; i <= 4; i++) {
+      const x = cx + i * w * 0.028;
+      ctx.beginPath();
+      ctx.moveTo(x - w*0.01, cy + h*0.15);
+      ctx.lineTo(x + w*0.01, cy + h*0.15);
+      ctx.lineTo(x + w*0.015, cy + h*0.11);
+      ctx.lineTo(x - w*0.015, cy + h*0.11);
+      ctx.fill(); ctx.stroke();
+    }
+
+    // Noise/grain effect overlay
+    ctx.globalAlpha = 0.2;
+    for(let i=0; i<1000; i++){
+        const x = Math.random()*w;
+        const y = Math.random()*h;
+        ctx.fillStyle = Math.random()>0.5?'#fff':'#000';
+        ctx.fillRect(x, y, 2, 2);
+    }
+    ctx.globalAlpha = 1;
   }
 }
 
@@ -1302,25 +1311,20 @@ function showJumpscare(type, duration = 700) {
   return new Promise(resolve => {
     const overlay = $('jumpscare');
     const cv = overlay.querySelector('canvas');
-    cv.width = window.innerWidth;
-    cv.height = window.innerHeight;
+    cv.width = window.innerWidth; cv.height = window.innerHeight;
     drawFace(cv.getContext('2d'), type, cv.width, cv.height);
     overlay.style.display = 'block';
     audio.sting(0.55);
     document.body.classList.add('shake');
     const flash = $('flash');
-    flash.style.transition = 'none';
-    flash.style.opacity = '0.6';
+    flash.style.transition = 'none'; flash.style.opacity = '0.6';
     setTimeout(() => { flash.style.transition = 'opacity 0.3s'; flash.style.opacity = '0'; }, 40);
-    setTimeout(() => {
-      overlay.style.display = 'none';
-      document.body.classList.remove('shake');
-      resolve();
-    }, duration);
+    setTimeout(() => { overlay.style.display = 'none'; document.body.classList.remove('shake'); resolve(); }, duration);
   });
 }
 
-const faces = ['kuntilanak', 'pocong', 'genderuwo'];
+// Masukin hantu baru ke sini
+const faces = ['kuntilanak', 'pocong', 'genderuwo', 'hantu_rias', 'hantu_senyum'];
 
 async function realJumpscare() {
   updateSanity(-8);
@@ -1329,9 +1333,7 @@ async function realJumpscare() {
 
 async function chainJumpscare() {
   audio.setHumVolume(0.1);
-  // Start with thunder for extra impact
-  await thunderStrike();
-  await delay(300);
+  await thunderStrike(); await delay(300);
   const count = 3 + Math.floor(Math.random() * 3);
   for (let i = 0; i < count; i++) {
     await showJumpscare(faces[Math.floor(Math.random() * faces.length)], 500 + Math.random() * 300);
@@ -1355,22 +1357,18 @@ async function watchTV() {
   tvScreen.material.emissive = new THREE.Color(0x441111);
   tvScreen.material.emissiveIntensity = 1;
   await creepyText('JANGAN TIDUR', 1200);
-  audio.whisper();
-  await delay(1200);
+  audio.whisper(); await delay(1200);
   await creepyText('KAMU TIDAK SENDIRIAN', 1500);
-  audio.slam();
-  document.body.classList.add('shake');
-  await delay(1500);
-  document.body.classList.remove('shake');
+  audio.slam(); document.body.classList.add('shake');
+  await delay(1500); document.body.classList.remove('shake');
 
   tvScreen.material.emissive = new THREE.Color(0x000000);
   tvScreen.material.emissiveIntensity = 0;
-  ambient.intensity = 0.25;
+  ambient.intensity = 0.8; // Lebih terang dari sebelumnya
   roomLights.forEach(rl => rl.light.intensity = rl.baseIntensity * 0.5);
-  scene.background.set(0x020204);
-  scene.fog.color.set(0x020204);
-  scene.fog.near = 2;
-  scene.fog.far = isMobile ? 12 : 15;
+  scene.background.set(0x050508);
+  scene.fog.color.set(0x050508);
+  scene.fog.near = 2; scene.fog.far = isMobile ? 12 : 15;
 
   state.phase = 'malam';
   state.endingStarted = false;
@@ -1391,13 +1389,10 @@ async function watchTV() {
 // ENDINGS
 // ============================================================
 let endingInProgress = false;
-
 async function triggerEnding(type) {
   if (endingInProgress) return;
-  endingInProgress = true;
-  gameEnded = true;
+  endingInProgress = true; gameEnded = true;
   if (document.pointerLockElement) document.exitPointerLock();
-
   const blackout = $('blackout');
 
   if (type === 'kabur') {
@@ -1409,42 +1404,23 @@ async function triggerEnding(type) {
       doors.front.group.rotation.y = -p * Math.PI / 2;
       if (p < 1) requestAnimationFrame(anim);
     };
-    anim();
-    await delay(1500);
-    blackout.style.opacity = '1';
-    await delay(1500);
+    anim(); await delay(1500);
+    blackout.style.opacity = '1'; await delay(1500);
 
     $('endTitle').textContent = 'KABUR';
-    $('endStory').innerHTML = `
-      Kamu berlari keluar rumah, tidak peduli apa yang ada di belakangmu.<br><br>
-      Jalanan gelap dan sepi. Kamu terus berlari sampai rumahmu.<br><br>
-      Besok paginya, temanmu menelepon.<br><br>
-      "Eh, kamu gimana? Aku udah di luar kota nih. Oh iya, tadi malam aku sempat cek CCTV rumah. Kamu... ngapain keluar rumah jam 2 pagi sambil lari-lari?"<br><br>
-      Kamu terdiam. Kamu baru sadar — malam itu, kamu tidak pernah benar-benar melihat temanmu pergi.
-    `;
+    $('endStory').innerHTML = `Kamu berlari keluar rumah, tidak peduli apa yang ada di belakangmu.<br><br>Jalanan gelap dan sepi. Kamu terus berlari sampai rumahmu.<br><br>Besok paginya, temanmu menelepon.<br><br>"Eh, kamu gimana? Aku udah di luar kota nih. Oh iya, tadi malam aku sempat cek CCTV rumah. Kamu... ngapain keluar rumah jam 2 pagi sambil lari-lari?"<br><br>Kamu terdiam. Kamu baru sadar — malam itu, kamu tidak pernah benar-benar melihat temanmu pergi.`;
     $('endSub').textContent = 'ENDING 1 / 2 — KABUR';
   } else {
     say('Kamu', 'Aku nggak bisa lari lagi... aku harus tidur.');
-    blackout.style.opacity = '0.6';
-    await delay(2000);
-    audio.whisper();
-    await delay(1500);
+    blackout.style.opacity = '0.6'; await delay(2000);
+    audio.whisper(); await delay(1500);
     await creepyText('...selamat tidur...', 2000);
-    blackout.style.opacity = '1';
-    await delay(2000);
+    blackout.style.opacity = '1'; await delay(2000);
 
     $('endTitle').textContent = 'BERTAHAN';
-    $('endStory').innerHTML = `
-      Kamu menutup mata, berharap semua ini mimpi.<br><br>
-      Suara-suara itu... berhenti. Perlahan.<br><br>
-      Pagi pun tiba.<br><br>
-      Temanmu sudah pulang. Dia menatapmu heran.<br><br>
-      "Eh, kamu ngapain tidur di kamar tamu? Aku kan nggak pernah nyuruh kamu nginep. Rumah ini kosong dari kemarin, aku lagi di Bali."<br><br>
-      Kamu menoleh ke jendela. Di luar, seorang perempuan berambut panjang sedang menatapmu. Lalu menghilang.
-    `;
+    $('endStory').innerHTML = `Kamu menutup mata, berharap semua ini mimpi.<br><br>Suara-suara itu... berhenti. Perlahan.<br><br>Pagi pun tiba.<br><br>Temanmu sudah pulang. Dia menatapmu heran.<br><br>"Eh, kamu ngapain tidur di kamar tamu? Aku kan nggak pernah nyuruh kamu nginep. Rumah ini kosong dari kemarin, aku lagi di Bali."<br><br>Kamu menoleh ke jendela. Di luar, seorang perempuan berambut panjang sedang menatapmu. Lalu menghilang.`;
     $('endSub').textContent = 'ENDING 2 / 2 — BERTAHAN';
   }
-
   await delay(1500);
   $('endScreen').style.display = 'flex';
   blackout.style.opacity = '0';
@@ -1463,9 +1439,7 @@ function animate() {
   lastTime = now;
 
   if (gameStarted && !isPaused && !gameEnded) {
-    updatePlayer(dt);
-    updateInteraction();
-    state.elapsed += dt;
+    updatePlayer(dt); updateInteraction(); state.elapsed += dt;
 
     roomLights.forEach(rl => {
       if (state.phase === 'malam') {
@@ -1476,18 +1450,9 @@ function animate() {
 
     if (state.phase === 'malam' && !gameEnded) {
       state.malamTime += dt;
-      if (state.malamTime >= state.nextFake) {
-        fakeJumpscare();
-        state.nextFake = state.malamTime + rand(15, 30);
-      }
-      if (state.malamTime >= state.nextReal) {
-        realJumpscare();
-        state.nextReal = state.malamTime + rand(40, 65);
-      }
-      if (state.malamTime >= state.nextBurst) {
-        chainJumpscare();
-        state.nextBurst = state.malamTime + 120;
-      }
+      if (state.malamTime >= state.nextFake) { fakeJumpscare(); state.nextFake = state.malamTime + rand(15, 30); }
+      if (state.malamTime >= state.nextReal) { realJumpscare(); state.nextReal = state.malamTime + rand(40, 65); }
+      if (state.malamTime >= state.nextBurst) { chainJumpscare(); state.nextBurst = state.malamTime + 120; }
 
       heartbeatTimer -= dt;
       if (heartbeatTimer <= 0) {
@@ -1497,7 +1462,6 @@ function animate() {
       }
     }
   }
-
   renderer.render(scene, camera);
 }
 
@@ -1505,41 +1469,27 @@ function animate() {
 // START
 // ============================================================
 $('startBtn').addEventListener('click', () => {
-  audio.init();
-  audio.resume();
-  audio.ambient();
+  audio.init(); audio.resume(); audio.ambient();
   $('startScreen').style.display = 'none';
   gameStarted = true;
 
-  if (!useTouchControls) {
-    document.body.requestPointerLock();
-  }
+  if (!useTouchControls) document.body.requestPointerLock();
 
-  setTimeout(() => {
-    say('Temanmu', '"Santai aja kayak rumah sendiri. Kunci kamar tamu ada di suatu tempat, cari aja. Kalau haus, minum di dapur."');
-  }, 800);
-  setTimeout(() => {
-    say('Temanmu', '"Aku berangkat dulu ya. Hati-hati..."');
-  }, 5500);
-  setTimeout(() => {
-    say('Kamu', 'Oke... rumahnya lumayan besar juga.');
-  }, 9500);
+  setTimeout(() => say('Temanmu', '"Santai aja kayak rumah sendiri. Kunci kamar tamu ada di suatu tempat, cari aja. Kalau haus, minum di dapur."'), 800);
+  setTimeout(() => say('Temanmu', '"Aku berangkat dulu ya. Hati-hati..."'), 5500);
+  setTimeout(() => say('Kamu', 'Oke... rumahnya lumayan besar juga.'), 9500);
 
   updateObjectives();
 });
 
 canvas.addEventListener('click', () => {
-  if (gameStarted && !useTouchControls && !pointerLocked && !gameEnded) {
+  if (gameStarted && !useTouchControls && !pointerLocked && !gameEnded && !settingsModal.classList.contains('active')) {
     document.body.requestPointerLock();
   }
 });
 
 window.addEventListener('contextmenu', e => e.preventDefault());
-
-// Prevent iOS bounce scroll
-document.addEventListener('touchmove', e => {
-  if (e.target === document.body || e.target === canvas) e.preventDefault();
-}, { passive: false });
+document.addEventListener('touchmove', e => { if (e.target === document.body || e.target === canvas) e.preventDefault(); }, { passive: false });
 
 updateObjectives();
 animate();
