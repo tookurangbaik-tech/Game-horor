@@ -108,18 +108,22 @@
 
   /* DOC READER */
   #docReader {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 150;
-    display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 150;
+    display: none; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+    overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+    touch-action: pan-y; pointer-events: auto;
   }
   #docReader.active { display: flex; }
   .docPaper {
-    background: #d4c8a8; color: #2a2010; max-width: 520px; width: 100%;
-    padding: 30px 28px; font-family: 'Georgia', serif; line-height: 1.8;
+    background: #d4c8a8; color: #2a2010; max-width: 520px; width: 100%; flex: 0 0 auto;
+    padding: 30px 28px; margin: auto 0 0; font-family: 'Georgia', serif; line-height: 1.8;
     box-shadow: 0 10px 60px rgba(0,0,0,0.9); transform: rotate(-0.5deg); border-radius: 3px;
   }
   .docTitle { font-size: 18px; font-weight: bold; border-bottom: 1px solid #6a5a2a; padding-bottom: 8px; margin-bottom: 14px; font-family: monospace; }
-  .docBody { font-size: 14px; white-space: pre-line; }
-  .docClose { margin-top: 24px; background: transparent; border: 2px solid #a00; color: #fff; padding: 10px 30px; font-family: monospace; cursor: pointer; }
+  .docBody { font-size: 14px; white-space: pre-line; overflow-wrap: anywhere; user-select: text; -webkit-user-select: text; }
+  .docClose { flex: 0 0 auto; position: sticky; bottom: 0; margin: 18px 0 0; background: #180606; border: 2px solid #a00; color: #fff; padding: 12px 36px; min-height: 44px; font-family: monospace; cursor: pointer; touch-action: manipulation; }
+  @media (max-height: 560px) { #docReader { justify-content: flex-start; padding-top: 12px; } .docPaper { padding: 20px 22px; margin-top: 0; } .docClose { margin-bottom: 4px; } }
 
   /* DEATH OVERLAY */
   #deathScreen {
@@ -617,12 +621,14 @@ interactables.push({ mesh: glass, type: 'minum', label: 'Minum air' });
 // Laci Dapur (Tang)
 const drawer = box(0.8, 0.2, 0.6, 0x4a3a2a, -4.5, 0.6, -1);
 interactables.push({ mesh: drawer, type: 'cari_tang', label: 'Buka Laci' });
+box(0.9, 0.7, 0.65, 0x4a3527, -5.5, 0.35, 0); // Meja kecil untuk koran
 const newspaper = box(0.45, 0.02, 0.3, 0xd8c8a8, -5.5, 0.73, 0);
 interactables.push({ mesh: newspaper, type: 'koran', label: 'Baca Koran Lama' });
 
 // KAMAR TAMU
 const bed = box(2, 0.5, 3.5, 0x6a5a8a, -4.5, 0.25, -5.5); 
 interactables.push({ mesh: bed, type: 'tidur', label: 'Tidur' });
+box(0.65, 0.5, 0.65, 0x4a3527, -3.5, 0.25, -6.5); // Nakas di samping kasur
 const diary = box(0.3, 0.05, 0.22, 0x4a2a1a, -3.5, 0.55, -6.5);
 interactables.push({ mesh: diary, type: 'buku', label: 'Baca Buku Harian' });
 
@@ -631,11 +637,13 @@ box(0.8, 1.2, 0.05, 0x556677, -0.4, 1.7, -3.8, { emissive: 0x000000 });
 
 // KAMAR UTAMA (Wandi)
 box(3, 0.5, 4, 0x555566, 4, 0.25, -4);
+box(0.65, 0.7, 0.65, 0x4a3527, 6, 0.35, -5); // Meja kecil tempat kunci
 const key = box(0.12, 0.25, 0.05, 0xddaa33, 6, 0.85, -5, { emissive: 0x442200 });
 interactables.push({ mesh: key, type: 'kunci', label: 'Ambil Kunci' });
 // Baterai (Di bawah kasur)
 const batteryObj = box(0.2, 0.4, 0.2, 0x44aa44, 3, 0.2, -5.5);
 interactables.push({ mesh: batteryObj, type: 'cari_baterai', label: 'Ambil Baterai Senter' });
+box(0.8, 0.7, 0.65, 0x4a3527, 5.8, 0.35, -4.8); // Meja untuk surat lama
 const letter = box(0.25, 0.02, 0.18, 0xd8c8a0, 5.8, 0.72, -4.8);
 interactables.push({ mesh: letter, type: 'surat', label: 'Baca Surat Lama' });
 
