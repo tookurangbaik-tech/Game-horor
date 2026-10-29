@@ -34,15 +34,35 @@
   .task.active { color: #fff; text-shadow: 0 0 8px #fff; }
   .task.done { color: #444; text-decoration: line-through; }
 
+  /* ITEM HOTBAR: center-bottom, away from mobile joystick and interact button */
   #inventory {
-    position: absolute; bottom: 20px; left: 20px; display: flex; gap: 10px; pointer-events: none;
+    position: fixed;
+    left: 50%;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 8px;
+    background: rgba(0,0,0,0.48);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 9px;
+    pointer-events: none;
+    z-index: 12;
+    max-width: calc(100vw - 170px);
   }
   .item-slot {
-    width: 40px; height: 40px; border: 2px solid #333; background: rgba(0,0,0,0.5);
+    flex: 0 0 auto;
+    width: 40px; height: 40px; border: 2px solid #333; background: rgba(0,0,0,0.68);
     border-radius: 5px; display: flex; align-items: center; justify-content: center;
-    font-size: 20px; opacity: 0.3; transition: all 0.3s;
+    font-size: 20px; opacity: 0.42; transition: border-color 0.2s, opacity 0.2s, box-shadow 0.2s;
   }
-  .item-slot.filled { opacity: 1; border-color: #a00; box-shadow: 0 0 10px #a00; }
+  .item-slot.filled { opacity: 1; border-color: #a00; box-shadow: 0 0 8px rgba(170,0,0,0.75); }
+  @media (max-width: 520px) {
+    #inventory { gap: 6px; padding: 5px 6px; bottom: max(14px, env(safe-area-inset-bottom)); max-width: calc(100vw - 150px); }
+    .item-slot { width: 34px; height: 34px; font-size: 18px; border-width: 1px; }
+  }
 
   #sanityBar {
     position: absolute; top: 16px; right: 60px; width: 140px; 
@@ -597,7 +617,7 @@ addWall(-1, -7, 1, -7); // Dinding belakang gudang
 
 addRoomLight(0, 5, 2.0, 0xffddbb); addRoomLight(-4, -1, 1.5, 0xffccaa); addRoomLight(0, -1, 1.0, 0xffccaa);
 addRoomLight(-4, -5, 1.5, 0xffccaa); addRoomLight(0, -5, 1.0, 0xbbccff); addRoomLight(4, -3, 1.5, 0xffccaa);
-addRoomLight(0, -8, 0.5, 0x884444); // Gudang redup
+addRoomLight(0, -6.4, 0.45, 0x884444); // Gudang redup, di dalam rumah
 
 // Props Helpers
 function getLambertMat(color) { return new THREE.MeshLambertMaterial({ color }); }
@@ -647,14 +667,14 @@ box(0.8, 0.7, 0.65, 0x4a3527, 5.8, 0.35, -4.8); // Meja untuk surat lama
 const letter = box(0.25, 0.02, 0.18, 0xd8c8a0, 5.8, 0.72, -4.8);
 interactables.push({ mesh: letter, type: 'surat', label: 'Baca Surat Lama' });
 
-// GUDANG BELAKANG (Sekring Cadangan)
-box(2, 0.8, 0.5, 0x3a2a1a, -0.8, 0.4, -7.5); // Rak
-box(2, 0.8, 0.5, 0x3a2a1a, 0.8, 0.4, -7.5);
-const spareFuse = box(0.15, 0.15, 0.15, 0xaaaaaa, 0.8, 0.85, -7.5, { emissive: 0x222222 });
+// GUDANG BELAKANG — rak dan sekring dipindahkan ke dalam batas lantai.
+// Lorong tengah (x -1 sampai 1, z -7 sampai -3) bisa dicapai dari bukaan di z -3.
+box(0.48, 0.8, 0.9, 0x3a2a1a, -0.58, 0.4, -5.8); // Rak sisi kiri, tidak menutup lorong
+const spareFuse = box(0.16, 0.16, 0.16, 0xc7c7c7, -0.58, 0.88, -5.8, { emissive: 0x554018 });
 interactables.push({ mesh: spareFuse, type: 'cari_sekring', label: 'Ambil Sekring Cadangan' });
 
-// KOTAK SEKERING UTAMA
-const fuseBox = box(0.4, 0.6, 0.15, 0x555555, 0.8, 1.5, -3.2);
+// KOTAK SEKERING UTAMA — ditempel di sisi dinding yang terlihat dan bisa dijangkau.
+const fuseBox = box(0.42, 0.62, 0.12, 0x555555, -5.5, 1.5, -2.82, { emissive: 0x171008 });
 interactables.push({ mesh: fuseBox, type: 'sekring_utama', label: 'Pasang Sekring' });
 
 // DOORS
@@ -794,16 +814,22 @@ function updatePlayer(dt) {
 
 // Interaction
 const raycaster = new THREE.Raycaster(), _center = new THREE.Vector2(0, 0);
-let currentTarget = null;
-function updateInteraction() {
+const interactableMeshes = interactables.map(i => i.mesh);
+let currentTarget = null, lastInteractionCheck = 0;
+function updateInteraction(force = false) {
   if (!gameStarted || isPaused || gameEnded || isCinematic) { $('prompt').classList.remove('show'); $('interactBtn').classList.remove('active'); currentTarget = null; return; }
+  const now = performance.now();
+  if (!force && now - lastInteractionCheck < 80) return;
+  lastInteractionCheck = now;
   raycaster.setFromCamera(_center, camera);
-  const meshes = interactables.map(i => i.mesh).filter(m => m.visible);
-  const hits = raycaster.intersectObjects(meshes, false);
+  const hits = raycaster.intersectObjects(interactableMeshes, false);
   let found = null;
-  if (hits.length > 0 && hits[0].distance < 2.5) found = interactables.find(i => i.mesh === hits[0].object);
-  
-  if (found && !found.hidden) {
+  for (const hit of hits) {
+    if (hit.distance > 2.5) break;
+    const candidate = interactables.find(i => i.mesh === hit.object);
+    if (candidate && candidate.mesh.visible && !candidate.hidden) { found = candidate; break; }
+  }
+  if (found) {
     currentTarget = found;
     $('prompt').textContent = `[E] ${found.label}`;
     $('prompt').classList.add('show'); $('interactBtn').classList.add('active');
@@ -984,8 +1010,6 @@ async function startRitual() {
   ritualLastActivity = performance.now();
   renderRitual();
   audio.setHumVolume(0.15);
-  startRitualSilenceMonitor();
-  
   try {
     mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const ctx = audio.ctx;
@@ -994,12 +1018,17 @@ async function startRitual() {
     audioAnalyser.fftSize = 256;
     source.connect(audioAnalyser);
   } catch(e) {
+    audioAnalyser = null;
     $('micStatus').textContent = "MIKROFON TIDAK ADA. TEKAN LAMA UNTUK NGAJI MANUAL.";
   }
+  // Timer dimulai setelah izin mikrofon selesai, supaya dialog izin tidak dihitung sebagai gagal ngaji.
+  ritualLastActivity = performance.now();
+  startRitualSilenceMonitor();
 }
 
 function startRitualSilenceMonitor() {
   if (ritualSilenceRaf) cancelAnimationFrame(ritualSilenceRaf);
+  const samples = audioAnalyser ? new Uint8Array(audioAnalyser.frequencyBinCount) : null;
   const monitor = () => {
     if (!$('ritualUI').classList.contains('active') || state.ended) {
       ritualSilenceRaf = 0;
@@ -1009,8 +1038,7 @@ function startRitualSilenceMonitor() {
     // Jika mikrofon tersedia, aktivitas suara memperbarui timer. Mode manual
     // memakai tombol tahan sebagai tanda sedang membaca.
     let avg = 0;
-    if (audioAnalyser) {
-      const samples = new Uint8Array(audioAnalyser.frequencyBinCount);
+    if (audioAnalyser && samples) {
       audioAnalyser.getByteFrequencyData(samples);
       let sum = 0;
       for (let i = 0; i < samples.length; i++) sum += samples[i];
@@ -1024,6 +1052,8 @@ function startRitualSilenceMonitor() {
     if (silentDuration > 3000) {
       $('ritualUI').style.background = `rgba(${Math.min(90, silentDuration / 100)}, 0, 0, 0.95)`;
       if (!micActive) $('micStatus').textContent = 'CEPAT NGAJI LAGI! DIA MENDEKAT!';
+    } else {
+      $('ritualUI').style.background = 'rgba(0,0,0,0.95)';
     }
     if (silentDuration >= maxSilence) {
       failedRitualIndex = Math.min(ritualIndex, ritualData.length - 1);
@@ -1043,7 +1073,13 @@ function renderRitual() {
   $('micStatus').textContent = `AYAT ${ritualIndex + 1} / 7 — BACA, LALU TAHAN UNTUK NGAJI`;
 }
 
-// Mikrofon atau Tombol Manual
+// Mikrofon atau Tombol Manual — bar dibuat sekali supaya DOM tidak terus dibuat ulang.
+const ritualVisualizerBars = Array.from({ length: 15 }, () => {
+  const bar = document.createElement('div');
+  bar.className = 'bar';
+  $('micVisualizer').appendChild(bar);
+  return bar;
+});
 $('reciteBtn').addEventListener('touchstart', startRecite, {passive: false});
 $('reciteBtn').addEventListener('mousedown', startRecite);
 function startRecite(e) {
@@ -1056,6 +1092,7 @@ function startRecite(e) {
   
   let dataArray = audioAnalyser ? new Uint8Array(audioAnalyser.frequencyBinCount) : null;
   let lastLoudTime = performance.now();
+  let lastVisualizerUpdate = 0;
   
   const checkVolume = () => {
     if (!micActive) return;
@@ -1066,14 +1103,14 @@ function startRecite(e) {
       avg = sum / dataArray.length;
     }
     
-    const vis = $('micVisualizer');
-    vis.innerHTML = '';
-    for(let i=0;i<15;i++) {
-      const bar = document.createElement('div'); bar.className = 'bar';
-      bar.style.height = Math.max(4, (avg / 255) * 40 + Math.random()*15) + 'px';
-      vis.appendChild(bar);
+    const visualNow = performance.now();
+    if (visualNow - lastVisualizerUpdate > 80) {
+      for (const bar of ritualVisualizerBars) {
+        bar.style.height = Math.max(4, (avg / 255) * 40 + Math.random() * 12) + 'px';
+      }
+      lastVisualizerUpdate = visualNow;
     }
-    
+
     if (avg > 15) lastLoudTime = performance.now();
     
     // Toleransi Diem 10 Detik
@@ -1100,7 +1137,7 @@ function endRecite(e) {
   if (!micActive) return;
   micActive = false;
   $('reciteBtn').classList.remove('recording');
-  $('micVisualizer').innerHTML = '';
+  for (const bar of ritualVisualizerBars) bar.style.height = '4px';
   $('ritualUI').style.background = 'rgba(0,0,0,0.95)';
   if (ritualSilenceRaf && !audioAnalyser) ritualLastActivity = Math.max(ritualLastActivity, performance.now() - 16);
   
@@ -1323,7 +1360,7 @@ async function triggerTV() {
   isPaused = false;
   if (!useTouchControls) document.body.requestPointerLock();
   
-  say('Kamu', 'Lampu mati... aku harus cari Baterai, Tang, dan Sekring Cadangan.');
+  say('Kamu', 'Lampu mati... cari Baterai di kamar utama, Tang di laci dapur, dan Sekring Cadangan di rak lorong belakang. Setelah lengkap, pasang di kotak sekring dekat dapur.');
 }
 
 async function tryInstallFuse() {
@@ -1472,7 +1509,8 @@ function tryInteract() {
 // ============================================================
 // MAIN LOOP & START
 // ============================================================
-let lastTime = performance.now(), heartbeatTimer = 0;
+let lastTime = performance.now(), heartbeatTimer = 0, lastRenderTime = 0;
+const renderInterval = isMobile ? (1000 / 30) : 0;
 function animate() {
   requestAnimationFrame(animate);
   const now = performance.now();
@@ -1491,7 +1529,10 @@ function animate() {
       if (heartbeatTimer <= 0) { audio.heartbeat(false); heartbeatTimer = 1.5; }
     }
   }
-  renderer.render(scene, camera);
+  if (!isMobile || now - lastRenderTime >= renderInterval) {
+    renderer.render(scene, camera);
+    lastRenderTime = now;
+  }
 }
 
 $('startBtn').addEventListener('click', () => {
