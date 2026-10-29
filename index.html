@@ -488,8 +488,72 @@ class AudioMan {
     const g = this.ctx.createGain(); g.gain.value = 0.15;
     noise.connect(lp).connect(g).connect(this.master); noise.start(t);
   }
+  // Short procedural Foley: no external audio files required.
+  metalClatter() {
+    if (!this.ctx || !this.master) return;
+    const t = this.ctx.currentTime;
+    [0, 0.075, 0.16].forEach((offset, i) => {
+      const osc = this.ctx.createOscillator(); osc.type = 'triangle';
+      osc.frequency.setValueAtTime([1450, 980, 620][i], t + offset);
+      osc.frequency.exponentialRampToValueAtTime([420, 310, 220][i], t + offset + 0.22);
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(0.001, t + offset);
+      g.gain.linearRampToValueAtTime(0.22, t + offset + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.001, t + offset + 0.24);
+      const filter = this.ctx.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 300;
+      osc.connect(filter).connect(g).connect(this.master); osc.start(t + offset); osc.stop(t + offset + 0.25);
+    });
+  }
+  bucketDrop() {
+    if (!this.ctx || !this.master) return;
+    const t = this.ctx.currentTime;
+    // Heavy hollow impact, then a few metallic rattles as the bucket rolls.
+    const osc = this.ctx.createOscillator(); osc.type = 'sine';
+    osc.frequency.setValueAtTime(115, t); osc.frequency.exponentialRampToValueAtTime(38, t + 0.32);
+    const body = this.ctx.createGain(); body.gain.setValueAtTime(0.001, t);
+    body.gain.linearRampToValueAtTime(0.85, t + 0.012); body.gain.exponentialRampToValueAtTime(0.001, t + 0.48);
+    osc.connect(body).connect(this.master); osc.start(t); osc.stop(t + 0.5);
+    const n = Math.floor(this.ctx.sampleRate * 0.75);
+    const buffer = this.ctx.createBuffer(1, n, this.ctx.sampleRate); const data = buffer.getChannelData(0);
+    for (let i = 0; i < n; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 2);
+    const noise = this.ctx.createBufferSource(); noise.buffer = buffer;
+    const bp = this.ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1250; bp.Q.value = 0.85;
+    const ng = this.ctx.createGain(); ng.gain.setValueAtTime(0.001, t + 0.02);
+    ng.gain.linearRampToValueAtTime(0.36, t + 0.035); ng.gain.exponentialRampToValueAtTime(0.001, t + 0.75);
+    noise.connect(bp).connect(ng).connect(this.master); noise.start(t + 0.02);
+    [0.12, 0.29, 0.43].forEach((d, i) => {
+      const ring = this.ctx.createOscillator(); ring.type = 'triangle';
+      ring.frequency.value = [740, 520, 390][i];
+      const rg = this.ctx.createGain(); rg.gain.setValueAtTime(0.001, t + d);
+      rg.gain.linearRampToValueAtTime(0.12, t + d + 0.01); rg.gain.exponentialRampToValueAtTime(0.001, t + d + 0.16);
+      ring.connect(rg).connect(this.master); ring.start(t + d); ring.stop(t + d + 0.17);
+    });
+  }
+  paperRustle() {
+    if (!this.ctx || !this.master) return;
+    const t = this.ctx.currentTime, n = Math.floor(this.ctx.sampleRate * 0.42);
+    const buffer = this.ctx.createBuffer(1, n, this.ctx.sampleRate), data = buffer.getChannelData(0);
+    for (let i = 0; i < n; i++) data[i] = (Math.random() * 2 - 1) * (0.25 + 0.75 * Math.sin(Math.PI * i / n));
+    const noise = this.ctx.createBufferSource(); noise.buffer = buffer;
+    const bp = this.ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2300; bp.Q.value = 0.65;
+    const g = this.ctx.createGain(); g.gain.setValueAtTime(0.001, t); g.gain.linearRampToValueAtTime(0.11, t + 0.06); g.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+    noise.connect(bp).connect(g).connect(this.master); noise.start(t);
+  }
+  electricCrackle() {
+    if (!this.ctx || !this.master) return;
+    const t = this.ctx.currentTime;
+    for (let i = 0; i < 5; i++) {
+      const at = t + i * 0.055;
+      const osc = this.ctx.createOscillator(); osc.type = 'square';
+      osc.frequency.setValueAtTime(1800 + Math.random() * 1800, at);
+      osc.frequency.exponentialRampToValueAtTime(180 + Math.random() * 160, at + 0.045);
+      const g = this.ctx.createGain(); g.gain.setValueAtTime(0.001, at); g.gain.linearRampToValueAtTime(0.075, at + 0.004); g.gain.exponentialRampToValueAtTime(0.001, at + 0.05);
+      osc.connect(g).connect(this.master); osc.start(at); osc.stop(at + 0.052);
+    }
+    this.slam();
+  }
   thunder() {
-    if (!this.ctx) return;
+    if (!this.ctx || !this.master) return;
     const t = this.ctx.currentTime;
     const sr = this.ctx.sampleRate;
     const bufSize = sr * 3;
@@ -643,7 +707,13 @@ const drawer = box(0.8, 0.2, 0.6, 0x4a3a2a, -4.5, 0.6, -1);
 const plierHandleA = box(0.07, 0.04, 0.32, 0x9d2626, -4.56, 0.74, -1.02);
 const plierHandleB = box(0.07, 0.04, 0.32, 0x9d2626, -4.44, 0.74, -0.98);
 const plierHead = box(0.18, 0.055, 0.12, 0xb7b9bd, -4.5, 0.77, -1);
-interactables.push({ mesh: plierHead, type: 'cari_tang', label: 'Ambil Tang' });
+// Hitbox interaksi lebih besar dari model kecilnya, agar tang tidak terasa hilang/intermiten.
+const plierHitbox = new THREE.Mesh(
+  new THREE.BoxGeometry(0.48, 0.28, 0.42),
+  new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
+);
+plierHitbox.position.set(-4.5, 0.77, -1); scene.add(plierHitbox);
+interactables.push({ mesh: plierHitbox, type: 'cari_tang', label: 'Ambil Tang' });
 box(0.9, 0.7, 0.65, 0x4a3527, -5.5, 0.35, 0); // Meja kecil untuk koran
 const newspaper = box(0.72, 0.035, 0.48, 0xe4d5b4, -5.5, 0.73, 0, { emissive: 0x302313 });
 interactables.push({ mesh: newspaper, type: 'koran', label: 'Baca Koran Lama' });
@@ -941,7 +1011,7 @@ function showDoc(docId) {
   const doc = docs[docId];
   $('docTitle').textContent = doc.title; $('docBody').textContent = doc.body;
   $('docReader').classList.add('active'); isPaused = true;
-  if (document.pointerLockElement) document.exitPointerLock(); audio.creak();
+  if (document.pointerLockElement) document.exitPointerLock(); audio.paperRustle();
 }
 $('docClose').addEventListener('click', () => {
   $('docReader').classList.remove('active'); isPaused = false;
@@ -1281,7 +1351,9 @@ async function triggerEmberScene() {
   
   await delay(1000);
   
-  audio.slam();
+  // Suara ember jatuh mendahului gerakan kamera supaya kejadian terbaca jelas.
+  audio.bucketDrop();
+  await delay(180);
   const fwd = new THREE.Vector3(); camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
   const startRot = camera.rotation.y;
   const targetRot = startRot + Math.PI;
@@ -1378,7 +1450,7 @@ async function tryInstallFuse() {
   updateObjectives();
   isPaused = true;
   
-  audio.slam(); await delay(500);
+  audio.electricCrackle(); await delay(500);
   
   // Rapid fire
   await showJumpscare('hantu_senyum', 400); await delay(100);
@@ -1439,7 +1511,7 @@ async function triggerEnding(type) {
 function tryInteract() {
   if (!currentTarget || isPaused || state.ended || isCinematic) return;
   const t = currentTarget.type;
-  audio.resume();
+  audio.init(); audio.resume();
 
   if (t === 'minum') {
     if (state.tasks.minum.done) return;
@@ -1489,9 +1561,10 @@ function tryInteract() {
   else if (t === 'cari_tang') {
     if (state.tools.tang) return;
     currentTarget.mesh.visible = false;
+    plierHandleA.visible = false; plierHandleB.visible = false; plierHead.visible = false;
     state.tools.tang = true;
     $('slot-tang').classList.add('filled');
-    audio.slam(); say('Kamu', 'Tang dapat. Ada suara piring pecah...');
+    audio.metalClatter(); say('Kamu', 'Tang dapat. Ada suara piring pecah...');
   }
   else if (t === 'cari_sekring') {
     if (state.tools.sekring) return;
