@@ -74,7 +74,7 @@
   #crosshair { position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: rgba(255,255,255,0.55); border-radius: 50%; transform: translate(-50%,-50%); }
   #prompt {
     position: absolute; top: 56%; left: 50%; transform: translateX(-50%);
-    font-size: 13px; color: #ffcc00; text-shadow: 0 0 8px #000, 0 2px 4px #000;
+    font-size: 14px; color: #ffdf55; background: rgba(0,0,0,0.55); padding: 6px 10px; border-radius: 5px; text-shadow: 0 0 8px #000, 0 2px 4px #000;
     letter-spacing: 2px; opacity: 0; transition: opacity 0.2s; text-align: center; white-space: nowrap;
   }
   #prompt.show { opacity: 1; }
@@ -131,19 +131,19 @@
     position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 150;
     display: none; flex-direction: column; align-items: center; justify-content: flex-start;
     padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
-    overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
-    touch-action: pan-y; pointer-events: auto;
+    overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch;
+    touch-action: pan-y; pointer-events: auto; scrollbar-width: thin; scrollbar-color: #8b6b3d #1a1711;
   }
   #docReader.active { display: flex; }
   .docPaper {
     background: #d4c8a8; color: #2a2010; max-width: 520px; width: 100%; flex: 0 0 auto;
-    padding: 30px 28px; margin: auto 0 0; font-family: 'Georgia', serif; line-height: 1.8;
+    padding: 30px 28px; margin: 0 auto; font-family: 'Georgia', serif; line-height: 1.8; position: relative;
     box-shadow: 0 10px 60px rgba(0,0,0,0.9); transform: rotate(-0.5deg); border-radius: 3px;
   }
   .docTitle { font-size: 18px; font-weight: bold; border-bottom: 1px solid #6a5a2a; padding-bottom: 8px; margin-bottom: 14px; font-family: monospace; }
-  .docBody { font-size: 14px; white-space: pre-line; overflow-wrap: anywhere; user-select: text; -webkit-user-select: text; }
-  .docClose { flex: 0 0 auto; position: sticky; bottom: 0; margin: 18px 0 0; background: #180606; border: 2px solid #a00; color: #fff; padding: 12px 36px; min-height: 44px; font-family: monospace; cursor: pointer; touch-action: manipulation; }
-  @media (max-height: 560px) { #docReader { justify-content: flex-start; padding-top: 12px; } .docPaper { padding: 20px 22px; margin-top: 0; } .docClose { margin-bottom: 4px; } }
+  .docBody { font-size: 15px; white-space: pre-line; overflow-wrap: anywhere; user-select: text; -webkit-user-select: text; line-height: 1.9; }
+  .docClose { flex: 0 0 auto; position: sticky; bottom: 0; margin: 14px 0 8px; background: #180606; border: 2px solid #a00; color: #fff; padding: 12px 36px; min-height: 44px; font-family: monospace; cursor: pointer; touch-action: manipulation; }
+  @media (max-height: 560px) { #docReader { justify-content: flex-start; padding-top: 12px; } .docPaper { padding: 20px 22px; margin: 0 auto; } .docClose { margin-bottom: 4px; } }
 
   /* DEATH OVERLAY */
   #deathScreen {
@@ -638,18 +638,21 @@ box(4, 0.9, 0.8, 0x5a4a3a, -5, 0.45, -1);
 const glass = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.2, 10), new THREE.MeshStandardMaterial({ color: 0xcceeff, transparent: true, opacity: 0.7 }));
 glass.position.set(-5, 1.02, -1); scene.add(glass);
 interactables.push({ mesh: glass, type: 'minum', label: 'Minum air' });
-// Laci Dapur (Tang)
+// Laci dapur dan tang yang terlihat jelas di atasnya
 const drawer = box(0.8, 0.2, 0.6, 0x4a3a2a, -4.5, 0.6, -1);
-interactables.push({ mesh: drawer, type: 'cari_tang', label: 'Buka Laci' });
+const plierHandleA = box(0.07, 0.04, 0.32, 0x9d2626, -4.56, 0.74, -1.02);
+const plierHandleB = box(0.07, 0.04, 0.32, 0x9d2626, -4.44, 0.74, -0.98);
+const plierHead = box(0.18, 0.055, 0.12, 0xb7b9bd, -4.5, 0.77, -1);
+interactables.push({ mesh: plierHead, type: 'cari_tang', label: 'Ambil Tang' });
 box(0.9, 0.7, 0.65, 0x4a3527, -5.5, 0.35, 0); // Meja kecil untuk koran
-const newspaper = box(0.45, 0.02, 0.3, 0xd8c8a8, -5.5, 0.73, 0);
+const newspaper = box(0.72, 0.035, 0.48, 0xe4d5b4, -5.5, 0.73, 0, { emissive: 0x302313 });
 interactables.push({ mesh: newspaper, type: 'koran', label: 'Baca Koran Lama' });
 
 // KAMAR TAMU
 const bed = box(2, 0.5, 3.5, 0x6a5a8a, -4.5, 0.25, -5.5); 
 interactables.push({ mesh: bed, type: 'tidur', label: 'Tidur' });
 box(0.65, 0.5, 0.65, 0x4a3527, -3.5, 0.25, -6.5); // Nakas di samping kasur
-const diary = box(0.3, 0.05, 0.22, 0x4a2a1a, -3.5, 0.55, -6.5);
+const diary = box(0.48, 0.08, 0.34, 0x5b241a, -3.5, 0.56, -6.5, { emissive: 0x1c0804 });
 interactables.push({ mesh: diary, type: 'buku', label: 'Baca Buku Harian' });
 
 // KAMAR MANDI
@@ -660,21 +663,22 @@ box(3, 0.5, 4, 0x555566, 4, 0.25, -4);
 box(0.65, 0.7, 0.65, 0x4a3527, 6, 0.35, -5); // Meja kecil tempat kunci
 const key = box(0.12, 0.25, 0.05, 0xddaa33, 6, 0.85, -5, { emissive: 0x442200 });
 interactables.push({ mesh: key, type: 'kunci', label: 'Ambil Kunci' });
-// Baterai (Di bawah kasur)
-const batteryObj = box(0.2, 0.4, 0.2, 0x44aa44, 3, 0.2, -5.5);
+// Baterai diletakkan di atas meja kecil di sisi kasur agar terlihat dan mudah diambil
+box(0.72, 0.72, 0.65, 0x4a3527, 2.0, 0.36, -5.45);
+const batteryObj = box(0.28, 0.42, 0.24, 0x54d35b, 2.0, 0.95, -5.45, { emissive: 0x174d19 });
 interactables.push({ mesh: batteryObj, type: 'cari_baterai', label: 'Ambil Baterai Senter' });
 box(0.8, 0.7, 0.65, 0x4a3527, 5.8, 0.35, -4.8); // Meja untuk surat lama
-const letter = box(0.25, 0.02, 0.18, 0xd8c8a0, 5.8, 0.72, -4.8);
+const letter = box(0.52, 0.035, 0.38, 0xe8d9b4, 5.8, 0.72, -4.8, { emissive: 0x2a1c0a });
 interactables.push({ mesh: letter, type: 'surat', label: 'Baca Surat Lama' });
 
 // GUDANG BELAKANG — rak dan sekring dipindahkan ke dalam batas lantai.
 // Lorong tengah (x -1 sampai 1, z -7 sampai -3) bisa dicapai dari bukaan di z -3.
 box(0.48, 0.8, 0.9, 0x3a2a1a, -0.58, 0.4, -5.8); // Rak sisi kiri, tidak menutup lorong
-const spareFuse = box(0.16, 0.16, 0.16, 0xc7c7c7, -0.58, 0.88, -5.8, { emissive: 0x554018 });
+const spareFuse = box(0.28, 0.24, 0.24, 0xe0b94e, -0.58, 0.92, -5.8, { emissive: 0x8a5a08 });
 interactables.push({ mesh: spareFuse, type: 'cari_sekring', label: 'Ambil Sekring Cadangan' });
 
 // KOTAK SEKERING UTAMA — ditempel di sisi dinding yang terlihat dan bisa dijangkau.
-const fuseBox = box(0.42, 0.62, 0.12, 0x555555, -5.5, 1.5, -2.82, { emissive: 0x171008 });
+const fuseBox = box(0.48, 0.68, 0.16, 0x777777, -5.5, 1.5, -2.70, { emissive: 0x27200a });
 interactables.push({ mesh: fuseBox, type: 'sekring_utama', label: 'Pasang Sekring' });
 
 // DOORS
