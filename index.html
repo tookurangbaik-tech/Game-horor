@@ -107,17 +107,28 @@
   /* DOC READER */
   #docReader {
     position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 150;
-    display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    padding: max(12px, env(safe-area-inset-top)) 16px max(12px, env(safe-area-inset-bottom));
+    overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
   }
   #docReader.active { display: flex; }
   .docPaper {
     background: #d4c8a8; color: #2a2010; max-width: 520px; width: 100%;
-    padding: 30px 28px; font-family: 'Georgia', serif; line-height: 1.8;
-    box-shadow: 0 10px 60px rgba(0,0,0,0.9); transform: rotate(-0.5deg); border-radius: 3px;
+    max-height: calc(100dvh - 92px); overflow-y: auto; flex: 0 1 auto;
+    padding: clamp(14px, 4vh, 30px) clamp(16px, 4vw, 28px); font-family: 'Georgia', serif; line-height: 1.7;
+    box-shadow: 0 10px 60px rgba(0,0,0,0.9); transform: rotate(-0.3deg); border-radius: 3px;
+    overscroll-behavior: contain; touch-action: pan-y; user-select: text; -webkit-user-select: text;
   }
   .docTitle { font-size: 18px; font-weight: bold; border-bottom: 1px solid #6a5a2a; padding-bottom: 8px; margin-bottom: 14px; font-family: monospace; }
-  .docBody { font-size: 14px; white-space: pre-line; }
-  .docClose { margin-top: 24px; background: transparent; border: 2px solid #a00; color: #fff; padding: 10px 30px; font-family: monospace; cursor: pointer; }
+  .docBody { font-size: 14px; white-space: pre-line; overflow-wrap: anywhere; }
+  .docClose { flex: 0 0 auto; margin-top: 12px; background: rgba(0,0,0,0.35); border: 2px solid #a00; color: #fff; padding: 10px 30px; min-height: 44px; font-family: monospace; cursor: pointer; touch-action: manipulation; }
+  @media (max-height: 500px) {
+    #docReader { justify-content: flex-start; }
+    .docPaper { max-height: calc(100dvh - 76px); padding: 12px 16px; line-height: 1.5; }
+    .docTitle { font-size: 15px; margin-bottom: 8px; }
+    .docBody { font-size: 12px; }
+    .docClose { margin-top: 8px; padding: 7px 24px; }
+  }
 
   /* EFFECTS */
   #vignette { position: fixed; inset: 0; pointer-events: none; z-index: 5; background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.85) 100%); }
@@ -862,14 +873,28 @@ function showDoc(docId) {
   $('docReader').classList.add('active'); isPaused = true;
   if (document.pointerLockElement) document.exitPointerLock(); audio.creak();
 }
-$('docClose').addEventListener('click', () => {
-  $('docReader').classList.remove('active'); isPaused = false;
-  if (gameStarted && !useTouchControls && !gameEnded) document.body.requestPointerLock();
-  if (state.readBuku && state.readKoran && state.readSurat) {
-    if (!state.tasks.dokumen.done) {
-      completeTask('dokumen');
-      say('Kamu', 'Semua dokumen udah kebaca. Ada sesuatu di rumah ini...');
-    }
+function closeDocReader() {
+  if (!$('docReader').classList.contains('active')) return;
+  $('docReader').classList.remove('active');
+  isPaused = false;
+  if (gameStarted && !useTouchControls && !gameEnded) {
+    // Pointer lock may be rejected by the browser; the player can click the game again.
+    try { document.body.requestPointerLock(); } catch (e) {}
+  }
+  if (state.readBuku && state.readKoran && state.readSurat && !state.tasks.dokumen.done) {
+    completeTask('dokumen');
+    say('Kamu', 'Semua dokumen udah kebaca. Ada sesuatu di rumah ini...');
+  }
+}
+$('docClose').addEventListener('click', e => {
+  e.preventDefault(); e.stopPropagation(); closeDocReader();
+});
+$('docClose').addEventListener('pointerup', e => {
+  if (e.pointerType === 'touch') { e.preventDefault(); closeDocReader(); }
+});
+window.addEventListener('keydown', e => {
+  if (e.code === 'Escape' && $('docReader').classList.contains('active')) {
+    e.preventDefault(); closeDocReader();
   }
 });
 
